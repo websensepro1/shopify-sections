@@ -1,1 +1,228 @@
+{% if product.metafields.custom.selected_variant == true or product.metafields.custom.selected_variant == null %}
+<style>
+  .hidden {
+    display: none !important;
+    opacity: 0;
+  }
+  [data-media-id], .media-item, .thumbnail, .product-media-container, .slideshow-slide, .media-gallery__grid li, .slideshow-controls__dots li {
+    opacity: 1;
+  }
+  /* Hide all slides, dots, and thumbnails until initialized */
+  .slideshow-slide, .slideshow-controls__dots li, .thumbnail, .dialog-thumbnails-list__thumbnail {
+    display: none;
+  }
+  .media-gallery[data-variant-images-initialized="true"] .slideshow-slide,
+  .media-gallery[data-variant-images-initialized="true"] .slideshow-controls__dots li,
+  .media-gallery[data-variant-images-initialized="true"] .thumbnail,
+  .media-gallery[data-variant-images-initialized="true"] .dialog-thumbnails-list__thumbnail {
+    display: block;
+  }
+</style>
+<script>
+(function() {
+  let productDataCache = null;
+  let lastSelectedColor = null;
 
+  function updateVariantImages(selectedColor, mediaItems, thumbnailButtons, sliders, gridItems, dotItems, mediaGallery) {
+    const normalizedSelectedColor = selectedColor ? selectedColor.toLowerCase().replace(/\s+/g, '') : null;
+    let foundMatchingImages = false;
+
+    // Hide all images, thumbnails, grid items, and pagination dots
+    mediaItems.forEach(mediaItem => {
+      mediaItem.classList.add('hidden');
+      const parentSlide = mediaItem.closest('slideshow-slide');
+      if (parentSlide) parentSlide.classList.add('hidden');
+    });
+    thumbnailButtons.forEach(button => button.classList.add('hidden'));
+    gridItems.forEach(gridItem => gridItem.classList.add('hidden'));
+    dotItems.forEach(dot => dot.classList.add('hidden'));
+
+    if (normalizedSelectedColor) {
+      // Show only images, thumbnails, grid items, and dots matching the selected color
+      mediaItems.forEach((mediaItem, index) => {
+        const img = mediaItem.tagName === 'IMG' ? mediaItem : mediaItem.querySelector('img');
+        if (img?.alt) {
+          const altText = img.alt.toLowerCase().replace(/\s+/g, '');
+          if (altText.includes(normalizedSelectedColor)) {
+            mediaItem.classList.remove('hidden');
+            const parentSlide = mediaItem.closest('slideshow-slide');
+            if (parentSlide) {
+              parentSlide.classList.remove('hidden');
+              parentSlide.style.display = 'block'; // Ensure display is set
+            }
+            if (dotItems[index]) {
+              dotItems[index].classList.remove('hidden');
+              dotItems[index].style.display = 'block'; // Ensure display is set
+              // Update aria-label to reflect correct slide count
+              const visibleDots = dotItems.filter(dot => !dot.classList.contains('hidden')).length;
+              dotItems[index].querySelector('button').setAttribute('aria-label', `Slide ${index + 1} of ${visibleDots}`);
+            }
+            foundMatchingImages = true;
+          }
+        }
+      });
+      thumbnailButtons.forEach(button => {
+        const img = button.querySelector('img');
+        if (img?.alt) {
+          const altText = img.alt.toLowerCase().replace(/\s+/g, '');
+          if (altText.includes(normalizedSelectedColor)) {
+            button.classList.remove('hidden');
+            button.style.display = 'block'; // Ensure display is set
+          }
+        }
+      });
+      gridItems.forEach(gridItem => {
+        const img = gridItem.querySelector('img');
+        if (img?.alt) {
+          const altText = img.alt.toLowerCase().replace(/\s+/g, '');
+          if (altText.includes(normalizedSelectedColor)) {
+            gridItem.classList.remove('hidden');
+          }
+        }
+      });
+    }
+
+    // Fallback: Show all if no matching images found or no color selected
+    if (!normalizedSelectedColor || !foundMatchingImages || !productDataCache?.variants?.length > 1) {
+      if (normalizedSelectedColor && !foundMatchingImages) {
+        console.log(`Selected Variant Image: No images found for "${selectedColor}". Showing all images.`);
+      }
+      mediaItems.forEach((mediaItem, index) => {
+        mediaItem.classList.remove('hidden');
+        const parentSlide = mediaItem.closest('slideshow-slide');
+        if (parentSlide) {
+          parentSlide.classList.remove('hidden');
+          parentSlide.style.display = 'block'; // Ensure display is set
+        }
+        if (dotItems[index]) {
+          dotItems[index].classList.remove('hidden');
+          dotItems[index].style.display = 'block'; // Ensure display is set
+          // Update aria-label for all dots
+          const visibleDots = dotItems.length;
+          dotItems[index].querySelector('button').setAttribute('aria-label', `Slide ${index + 1} of ${visibleDots}`);
+        }
+      });
+      thumbnailButtons.forEach(button => {
+        button.classList.remove('hidden');
+        button.style.display = 'block'; // Ensure display is set
+      });
+      gridItems.forEach(gridItem => gridItem.classList.remove('hidden'));
+    }
+
+    // Refresh sliders/galleries
+    sliders.forEach(slider => {
+      if (typeof slider.update === 'function') slider.update();
+      else if (typeof slider.initPages === 'function') slider.initPages();
+      else if (typeof slider.reset === 'function') slider.reset();
+      else if (typeof window.Swiper !== 'undefined' && slider.swiper) {
+        slider.swiper.update();
+        slider.swiper.slideTo(0); // Reset to first slide
+      } else {
+        window.dispatchEvent(new Event('resize'));
+      }
+    });
+
+    // Mark gallery as initialized to apply CSS display rules
+    if (mediaGallery) {
+      mediaGallery.setAttribute('data-variant-images-initialized', 'true');
+    }
+  }
+
+  function initVariantImages() {
+    const mediaGallery = document.querySelector('[data-product-media-gallery], media-gallery, .product__media, .product-media, .media-container, [data-product-media]');
+    const productSection = document.querySelector('[data-product-id], .product-variant-id, .product-form, .product__form, [data-product-form], .product__info-container');
+    
+    if (!mediaGallery || !productSection) {
+      console.error('Selected Variant Image: Required elements not found. Media Gallery:', !!mediaGallery, 'Product Section:', !!productSection);
+      return;
+    }
+
+    const mediaItems = Array.from(mediaGallery.querySelectorAll('img, [data-media-id], .media-item, .product-media-item, slideshow-slide img, .product__media img'));
+    const thumbnailButtons = Array.from(mediaGallery.querySelectorAll('.slideshow-controls__thumbnails button, .thumbnail, [data-thumbnail], .dialog-thumbnails-list__thumbnail'));
+    const sliders = Array.from(mediaGallery.querySelectorAll('[data-slider], slider-component, .slider, .swiper, .carousel, .product-media-slider'));
+    const gridItems = Array.from(mediaGallery.querySelectorAll('.media-gallery__grid li'));
+    const dotItems = Array.from(mediaGallery.querySelectorAll('.slideshow-controls__dots li'));
+
+    const showVariantImage = () => {
+      if (!productDataCache) {
+        console.warn('Selected Variant Image: Product data not yet loaded.');
+        return;
+      }
+
+      let selectedColor = null;
+      const hasMultipleVariants = productDataCache.variants && productDataCache.variants.length > 1;
+      const variantSelects = document.querySelector('[data-variant-selects], variant-selects, .variant-picker, .product-form__variants, .product__variants, [data-product-variants], .product__variant-options');
+
+      if (variantSelects && hasMultipleVariants) {
+        const currentValues = Array.from(
+          variantSelects.querySelectorAll('select option[selected], input:checked, [data-variant-option][aria-selected="true"], [data-variant-option].is-selected, [data-variant-option][class*="selected"]')
+        ).map(el => el.value || el.getAttribute('data-variant-option') || el.textContent.trim());
+
+        selectedColor = currentValues.find(value =>
+          productDataCache.options.some(opt => opt.values.includes(value))
+        );
+
+        if (!selectedColor) {
+          console.warn('Selected Variant Image: No matching option value found for current selection:', currentValues);
+        }
+      }
+
+      if (selectedColor === lastSelectedColor) {
+        return; // No change in relevant selection
+      }
+
+      lastSelectedColor = selectedColor;
+      updateVariantImages(selectedColor, mediaItems, thumbnailButtons, sliders, gridItems, dotItems, mediaGallery);
+    };
+
+    if (productDataCache) {
+      showVariantImage(); // Initial call if data is already there
+    } else {
+      const shopifyRoot = window.Shopify?.routes?.root || '/';
+      const handle = `products/${"{{ product.handle }}"}.js`;
+      fetch(`${shopifyRoot}${handle}`)
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+          return response.json();
+        })
+        .then(product => {
+          productDataCache = product;
+          showVariantImage(); // Call after data is fetched
+          // Add event listeners after data is available
+          productSection.removeEventListener('change', showVariantImage);
+          productSection.removeEventListener('variant:change', showVariantImage);
+          productSection.removeEventListener('shopify:variant:change', showVariantImage);
+          productSection.removeEventListener('product:variant-updated', showVariantImage);
+          productSection.addEventListener('change', showVariantImage);
+          productSection.addEventListener('variant:change', showVariantImage);
+          productSection.addEventListener('shopify:variant:change', showVariantImage);
+          productSection.addEventListener('product:variant-updated', showVariantImage);
+        })
+        .catch(error => console.error("Selected Variant Image: Error fetching product data:", error));
+    }
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initVariantImages();
+  } else {
+    document.addEventListener('DOMContentLoaded', initVariantImages);
+  }
+
+  // Mutation observer for dynamic content
+  const observerTarget = document.querySelector('[data-product-id]') || document.body;
+  const observer = new MutationObserver((mutationsList) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        const mediaGallery = document.querySelector('[data-product-media-gallery], media-gallery, .product__media, .product-media, .media-container, [data-product-media]');
+        if (mediaGallery && !mediaGallery.hasAttribute('data-variant-images-initialized')) {
+          mediaGallery.setAttribute('data-variant-images-initialized', 'true');
+          initVariantImages();
+          break;
+        }
+      }
+    }
+  });
+  observer.observe(observerTarget, { childList: true, subtree: true });
+})();
+</script>
+{% endif %}
