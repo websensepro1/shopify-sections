@@ -1,0 +1,202 @@
+<section id="marquee-section-{{ section.id }}" class="marquee-text-section">
+  <div 
+    class="marquee-box" 
+    style="background-color: {{ section.settings.layer1_bg }}; color: {{ section.settings.layer1_color }};"
+  >
+    <div class="marquee {% if section.settings.pause_on_hover %}pause-on-hover{% endif %} {% if section.settings.layer1_direction == 'right' %}marquee-right{% endif %}">
+      {% for i in (1..3) %}
+        {% for block in section.blocks %}
+          {% if block.type == 'layer1_text' %}
+            <span>{{ block.settings.text }}</span>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+  <div 
+    class="marquee-box-2" 
+    style="background-color: {{ section.settings.layer2_bg }}; color: {{ section.settings.layer2_color }};"
+  >
+    <div class="marquee-2 {% if section.settings.pause_on_hover %}pause-on-hover{% endif %} {% if section.settings.layer2_direction == 'left' %}marquee-left{% endif %}">
+      {% for i in (1..3) %}
+        {% for block in section.blocks %}
+          {% if block.type == 'layer2_text' %}
+            <span>{{ block.settings.text }}</span>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<style>
+  #marquee-section-{{ section.id }} {
+    width: 100%;
+  }
+  .marquee-box {
+    transform: rotate(3.5deg);
+    overflow: hidden;
+    position: relative;
+    padding: 10px 0;
+  }
+  .marquee-box-2 {
+    transform: rotate(-2.5deg);
+    overflow: hidden;
+    position: relative;
+    margin-top: 20px;
+    padding: 10px 0;
+  }
+  #marquee-section-template--24209809703206__marquee_text_b34LQm {
+    padding-bottom: 40px;
+    padding-top: 40px;
+  }
+  
+  @media (max-width: 767px) {
+    .marquee-box {
+      left: 0%;
+    }
+    .marquee-box-2 {
+      left: 0%;
+    }
+  }
+  .marquee,
+  .marquee-2 {
+    display: flex;
+    white-space: nowrap;
+    width: max-content;
+  }
+  .marquee span,
+  .marquee-2 span {
+    padding: 0 1rem;
+    display: inline-block;
+  }
+  .marquee {
+    animation: marquee 15s linear infinite;
+  }
+  .marquee-right {
+    animation: marquee-right 15s linear infinite;
+  }
+  .marquee-2 {
+    animation: marquee-2 15s linear infinite;
+  }
+  .marquee-left {
+    animation: marquee 15s linear infinite;
+  }
+  
+  /* Pause on hover */
+  .pause-on-hover:hover {
+    animation-play-state: paused;
+  }
+  
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes marquee-right {
+    0%   { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes marquee-2 {
+    0%   { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+  }
+</style>
+{% schema %}
+{
+  "name": "Marquee Text",
+  "max_blocks": 2,
+  "settings": [
+    {
+      "type": "color",
+      "id": "layer1_bg",
+      "label": "Layer 1 Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "layer1_color",
+      "label": "Layer 1 Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "layer1_direction",
+      "label": "Layer 1 Direction",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left to Right"
+        },
+        {
+          "value": "right",
+          "label": "Right to Left"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "layer2_bg",
+      "label": "Layer 2 Background Color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "layer2_color",
+      "label": "Layer 2 Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "layer2_direction",
+      "label": "Layer 2 Direction",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left to Right"
+        },
+        {
+          "value": "right",
+          "label": "Right to Left"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on Hover",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "layer1_text",
+      "name": "Layer 1 Text Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    },
+    {
+      "type": "layer2_text",
+      "name": "Layer 2 Text Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marquee Text",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
