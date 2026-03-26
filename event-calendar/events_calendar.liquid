@@ -1,1 +1,2140 @@
 
+
+{% assign section_id = section.id | replace: '+', '' | replace: '=', '' %}
+
+{%- comment -%} Assign: detect if dynamic metadata content is present in section {%- endcomment -%}
+{%- assign enable_metafield_detect = section.settings.enable_metafield_detect -%}
+
+{%- comment -%} Images: all placeholders {%- endcomment -%}
+{%- assign placeholder_image_id = 'oRWRlTgBrPo' -%}
+
+{%- comment -%} Images: check image crop aspect ratio {%- endcomment -%}
+{%- if section.settings.image_crop == 'none' or section.settings.image_crop == 'match_text_box' -%}
+  {%- assign image_crop_width = section.settings.image.width | default: '1000' -%}
+  {%- assign image_crop_height = section.settings.image.height | default: '1200' -%}
+{%- else -%}
+  {%- assign image_crop_width = section.settings.image_crop | split: ':' | first | times: 1000 -%}
+  {%- assign image_crop_height = section.settings.image_crop | split: ':' | last | times: 1000 -%}
+{%- endif -%}
+
+{%- assign mobile_image_crop_width = section.settings.mobile_background_image.width | default: image_crop_width -%}
+{%- assign mobile_image_crop_height = section.settings.mobile_background_image.height | default: image_crop_height -%}
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{%- comment -%} Layout: has user entered measurement value into max-width field? {%- endcomment -%}
+{%- if section.settings.max_width contains 'px' or section.settings.max_width contains '%' -%}
+  {%- assign max_width = section.settings.max_width -%}
+{%- else -%}
+  {%- assign max_width = section.settings.max_width | append: 'px' -%}
+{%- endif -%}
+
+{% comment %} Metafields: hide section if there is no content {% endcomment %}
+{%- if section.settings.image == blank and enable_metafield_detect == true -%}
+  {%- break -%}
+{%- endif -%}
+
+{%- comment -%} Text: custom font_picker values {%- endcomment -%}
+{%- capture font_settings_list -%}
+{{ section.settings.main_font | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+{%- endcapture -%}
+{%- assign font_array = font_settings_list | split: '~' -%}
+
+{%- comment -%} CSS {%- endcomment -%}
+<style>
+  /*** Global styles ***/
+
+[id^="DP--"] {
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  text-transform: unset;
+  letter-spacing: unset;
+  margin: unset;
+  padding: unset;
+  z-index: 1;
+}
+
+.wbs-pro__section * {
+  box-sizing: border-box !important;
+}
+
+.wbs-pro__section img {
+  max-width: 100%;
+}
+
+[class^="wbs_pro_-_fixed"] {
+  display: none;
+}
+
+.wbs-pro__section h1,
+.wbs-pro__section h2,
+.wbs-pro__section h3,
+.wbs-pro__section h4,
+.wbs-pro__section h5,
+.wbs-pro__section h6 {
+  color: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.wbs-pro__rte,
+.wbs-pro__rte p,
+.wbs-pro__rte a,
+.wbs-pro__rte a:hover,
+.wbs-pro__rte a:visited,
+.wbs-pro__rte a:focus {
+  color: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.wbs-pro__rte a {
+  text-decoration: underline;
+}
+
+.wbs-pro__rte p {
+  margin-bottom: 0.8em;
+}
+
+.wbs-pro__rte p:last-of-type {
+  margin-bottom: 0;
+}
+
+.wbs-pro__rte ul {
+  margin: 1em 0;
+  padding-left: 40px;
+}
+
+.wbs-pro__rte li {
+  list-style: unset;
+}
+
+.wbs-pro__absolute-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  z-index: 2;
+}
+
+.wbs-pro__relative {
+  position: relative;
+}
+
+h1.wbs-pro__heading,
+h2.wbs-pro__heading,
+h3.wbs-pro__heading,
+h4.wbs-pro__heading,
+h5.wbs-pro__heading,
+h6.wbs-pro__heading {
+  margin-bottom: 1.2rem;
+}
+
+.wbs-pro__text {
+  margin: 0;
+  color: inherit;
+}
+
+.wbs-pro__button {
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: unset;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.wbs-pro__button::after {
+  display: none;
+}
+
+.wbs-pro__section button,
+.wbs-pro__section input[type="text"],
+.wbs-pro__section input[type="email"] {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.wbs-pro__sizer {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wbs-pro__height-sizer {
+  display: table;
+}
+
+.wbs-pro__height--x-small {
+  height: 125px;
+}
+
+.wbs-pro__height--small {
+  height: 300px;
+}
+
+.wbs-pro__height--medium {
+  height: 475px;
+}
+
+.wbs-pro__height--large {
+  height: 650px;
+}
+
+.wbs-pro__height--x-large {
+  height: 775px;
+}
+
+@media only screen and (max-width: 767px) {
+  .wbs-pro__height--x-small {
+    height: 94px;
+  }
+
+  .wbs-pro__height--small {
+    height: 225px;
+  }
+
+  .wbs-pro__height--medium {
+    height: 357px;
+  }
+
+  .wbs-pro__height--large {
+    height: 488px;
+  }
+
+  .wbs-pro__height--x-large {
+    height: 582px;
+  }
+}
+
+/*** Videos ***/
+
+.wbs-pro__video__wrapper video[loading=lazy],
+.wbs-pro__background-video[loading=lazy] {
+  opacity: 1;
+}
+
+/*** Images ***/
+.wbs-pro__image__wrapper {
+  display: grid;
+  position: relative;
+  margin: 0;
+}
+
+.wbs-pro__image__wrapper svg {
+  display: block;
+}
+
+.wbs-pro__image__wrapper:not(.wbs-pro__image__wrapper--contain) svg {
+  width: inherit;
+  height: inherit;
+}
+
+.wbs-pro__image__wrapper > * {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.wbs-pro__image__wrapper img,
+.wbs-pro__image__wrapper .wbs-pro__placeholder {
+  object-fit: cover;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.wbs-pro__image__wrapper--contain img {
+  object-fit: contain;
+}
+
+.wbs_pro__image-link {
+  display: block;
+  overflow: hidden;
+}
+
+/*** Widths ***/
+
+div.DP__widths {
+  display: inline-block !important;
+  vertical-align: top;
+  font-size: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.DP__widths * {
+  font-size: initial;
+}
+
+@media (max-width: 767px) {
+  div.DP__widths {
+    width: 100% !important;
+  }
+}
+
+/*** Flex ***/
+.wbs-pro__flex {
+  display: flex;
+}
+
+.wbs-pro__flex-wrap {
+  flex-wrap: wrap;
+}
+
+.wbs-pro__flex--1-per-row .wbs-pro__flex-item {
+  flex-basis: 100%;
+}
+
+.wbs-pro__flex--2-per-row .wbs-pro__flex-item {
+  flex-basis: 50%;
+}
+
+.wbs-pro__flex--3-per-row .wbs-pro__flex-item {
+  flex-basis: 33.3333%;
+}
+
+.wbs-pro__flex--4-per-row .wbs-pro__flex-item {
+  flex-basis: 25%;
+}
+
+.wbs-pro__flex--5-per-row .wbs-pro__flex-item {
+  flex-basis: 20%;
+}
+
+.wbs-pro__flex--6-per-row .wbs-pro__flex-item {
+  flex-basis: 16.6666%;
+}
+
+.wbs-pro__flex--7-per-row .wbs-pro__flex-item {
+  flex-basis: 14.3%;
+}
+
+.wbs-pro__flex--8-per-row .wbs-pro__flex-item {
+  flex-basis: 12.5%;
+}
+
+.wbs-pro__flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.wbs-pro__grid-row-reverse {
+  direction: rtl;
+}
+
+.wbs-pro__grid-row-reverse * {
+  direction: ltr;
+}
+
+.wbs-pro__justify-left {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.wbs-pro__justify-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.wbs-pro__justify-right {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.wbs-pro__justify-justify {
+  justify-content: space-between;
+  text-align: justify;
+}
+
+.wbs-pro__align-top {
+  align-items: flex-start;
+}
+
+.wbs-pro__align-center {
+  align-items: center;
+}
+
+.wbs-pro__align-bottom {
+  align-items: flex-end;
+}
+
+/** Text alignment **/
+
+.wbs-pro__text-alignment-left {
+  text-align: left;
+}
+
+.wbs-pro__text-alignment-center {
+  text-align: center;
+}
+
+.wbs-pro__text-alignment-right {
+  text-align: right;
+}
+
+.wbs-pro__text-alignment-justify {
+  text-align: justify;
+}
+
+/*** Grid ***/
+.wbs-pro__grid {
+  display: grid;
+}
+
+.wbs-pro__grid--1-per-row {
+  grid-template-columns: 1fr;
+}
+
+.wbs-pro__grid--2-per-row {
+  grid-template-columns: 1fr 1fr;
+}
+
+.wbs-pro__grid--3-per-row {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.wbs-pro__grid--4-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.wbs-pro__grid--5-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.wbs-pro__grid--6-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.wbs-pro__grid--7-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.wbs-pro__grid--8-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.wbs-pro__grid-reverse {
+  direction: rtl;
+}
+
+.wbs-pro__grid-reverse * {
+  direction: ltr;
+}
+
+/*** Helpers ***/
+.wbs-pro__unset {
+  font-family: unset;
+  font-size: unset;
+  letter-spacing: unset;
+  line-height: unset;
+  margin: unset;
+  padding: unset;
+  list-style: none;
+}
+
+.wbs-pro__force-full-width {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.wbs-pro__visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+.wbs-pro__recaptcha-message {
+  margin-top: 0.8em;
+  font-size: 0.8em;
+}
+
+.wbs-pro__recaptcha-message a,
+.wbs-pro__recaptcha-message a:hover,
+.wbs-pro__recaptcha-message a:focus {
+  font-style: italic;
+  color: inherit;
+  font-size: inherit;
+}
+
+/** Pages **/
+.wbs-pro__page-intro {
+  width: 100%;
+}
+
+/** Theme editor warnings **/
+
+.wbs-pro__no-app-warning {
+  position: relative;
+  overflow: hidden;
+  padding: 1em;
+}
+
+.wbs-pro__no-app-warning-text {
+  position: relative;
+  background: #ff0;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 10px;
+  max-width: 50%;
+  margin: 0 auto;
+}
+
+.wbs-pro__no-app-warning-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 130%;
+  background: repeating-linear-gradient(-45deg, #ff0, #ff0 20px, #000 20px, #000 40px);
+  animation: wbs-pro__warning-background 1s linear infinite;
+}
+
+@keyframes wbs-pro__warning-background {
+  to {
+    transform: translateX(-56px);
+  }
+}
+
+/** Animations **/
+
+[style*="--wbs-pro-animate"] {
+  will-change: transform;
+  transform: translateZ(0);
+  opacity: 0;
+}
+
+.wbs-pro__animation-applied {
+  overflow: hidden;
+}
+
+.wbs-pro__animation-applied [style*="--wbs-pro-animate"] {
+  --wbs-pro-animation-multiplier: 0.3s;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  animation-delay: calc(var(--wbs-pro-animation-multiplier) * var(--wbs-pro-animate));
+}
+
+@keyframes wbs-pro__animation--fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes wbs-pro__animation--fade-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes wbs-pro__animation--fade-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(-10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes wbs-pro__animation--fade-in-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wbs-pro__animation--fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/** Parallax **/
+.wbs-pro__parallax {
+  position: relative;
+  z-index: 1;
+}
+
+.wbs-pro__parallax > .wbs-pro__parallax-img {
+  position: absolute;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/** Responsive helpers **/
+
+.wbs-pro__desktop--visible {
+  display: inherit;
+}
+
+.wbs-pro__desktop--hidden {
+  display: none !important;
+}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+  .wbs-pro__tablet--visible {
+    display: block !important;
+  }
+
+  .wbs-pro__tablet--hidden {
+    display: none !important;
+  }
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+  .wbs-pro__mobile--visible {
+    display: block !important;
+  }
+
+  .wbs-pro__mobile--hidden {
+    display: none !important;
+  }
+}
+
+/** Theme specific **/
+
+/* Dawn */
+[class*="wbs-pro"]:empty {
+  display: inherit;
+}
+
+/* Debut - offset margin from the header */
+/* .main-content[id="MainContent"] .shopify-section[class*="DP__"]:first-child,
+.main-content[id="MainContent"] [id*="DP__"] {
+  margin-top: -35px;
+}
+
+@media only screen and (min-width: 750px) {
+  .main-content[id="MainContent"] .shopify-section[class*="DP__"]:first-child,
+  .main-content[id="MainContent"] .DP__widths.DP__width--half:first-child,
+  .main-content[id="MainContent"] .DP__widths.DP__width--half:first-child + .DP__widths.DP__width--half,
+  .main-content[id="MainContent"] [id*="DP__"] {
+    margin-top: -55px;
+  }
+} */
+
+/* Brooklyn - prevent default margins (but leave them on theme sections) */
+.index-sections [class*="DP__"] {
+  margin-top: 0;
+}
+
+.index-sections [class*="DP__"].shopify-section:first-child:not(.shopify-section--full-width) {
+  margin-top: 0;
+}
+
+/* Impulse - prevent default margins (but leave them on theme sections) */
+.main-content [class*="DP__"] {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Cornerstone - override overflow: hidden */
+[class*="DP__"].shopify-section {
+  overflow: unset;
+}
+
+  {%- if section.settings.override_theme_font != blank -%}
+    {%- for font in font_array -%}
+      {%- unless font contains 'error' -%}{{ font }}{%- endunless -%}
+    {%- endfor -%}
+    .DP--{{ section_id }} {
+      --main-font: {{ section.settings.main_font.family }}, {{ section.settings.main_font.fallback_families }};
+      --main-font-weight: {{ section.settings.main_font.weight }};
+      --main-font-style: {{ section.settings.main_font.style }};
+      --heading-font: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+      --heading-font-weight: {{ section.settings.heading_font.weight }};
+      --heading-font-style: {{ section.settings.heading_font.style }};
+    }
+  {%- endif -%}
+
+  .DP--{{ section_id }} {
+    margin-top: {{ section.settings.outer_margin }}px;
+    margin-bottom: {{ section.settings.outer_margin }}px;
+    {%- if section.settings.override_theme_font != blank -%}
+      font-family: var(--main-font);
+      font-weight: var(--main-font-weight);
+      font-style: var(--main-font-style);
+    {%- endif -%}
+
+  }
+
+  .DP--{{ section_id }} .wbs-pro__sizer {
+    padding-top: {{ section.settings.inner_padding }}px;
+    padding-bottom: {{ section.settings.inner_padding }}px;
+    width: {{ section.settings.base_width }}%;
+    max-width: {{ max_width }};
+  }
+
+  .DP--{{ section_id }} .wbs-pro__background {
+    background: {{ section.settings.background_solid }};
+    background: {{ section.settings.background_color }};
+  }
+
+  {%- comment -%} Full design control CSS variables {%- endcomment -%}
+  {%- if section.settings.enable_full_design_control == true -%}
+    .DP--{{ section_id }} {
+      {%- if section.settings.button_background_color != blank and section.settings.button_background_color.alpha > 0 -%}
+        --dp-button-background-color: {{ section.settings.button_background_color }};
+      {%- endif -%}
+      {%- if section.settings.button_border_color != blank and section.settings.button_border_color.alpha > 0 -%}
+        --dp-button-border-color: {{ section.settings.button_border_color }};
+      {%- endif -%}
+      {%- if section.settings.button_hover_background_color != blank and section.settings.button_hover_background_color.alpha > 0 -%}
+        --dp-button-hover-background-color: {{ section.settings.button_hover_background_color }};
+      {%- endif -%}
+      {%- if section.settings.button_text_color != blank and section.settings.button_text_color.alpha > 0 -%}
+        --dp-button-text-color: {{ section.settings.button_text_color }};
+      {%- endif -%}
+      {%- if section.settings.weekdays_background_color != blank and section.settings.weekdays_background_color.alpha > 0 -%}
+        --dp-weekdays-background-color: {{ section.settings.weekdays_background_color }};
+      {%- endif -%}
+      {%- if section.settings.weekdays_text_color != blank and section.settings.weekdays_text_color.alpha > 0 -%}
+        --dp-weekdays-text-color: {{ section.settings.weekdays_text_color }};
+      {%- endif -%}
+      {%- if section.settings.grid_border_color != blank and section.settings.grid_border_color.alpha > 0 -%}
+        --dp-grid-border-color: {{ section.settings.grid_border_color }};
+      {%- endif -%}
+      {%- if section.settings.day_border_color != blank and section.settings.day_border_color.alpha > 0 -%}
+        --dp-day-border-color: {{ section.settings.day_border_color }};
+      {%- endif -%}
+      {%- if section.settings.day_background_color != blank and section.settings.day_background_color.alpha > 0 -%}
+        --dp-day-background-color: {{ section.settings.day_background_color }};
+      {%- endif -%}
+      {%- if section.settings.day_number_text_color != blank and section.settings.day_number_text_color.alpha > 0 -%}
+        --dp-day-number-text-color: {{ section.settings.day_number_text_color }};
+      {%- endif -%}
+      {%- if section.settings.today_background_color != blank and section.settings.today_background_color.alpha > 0 -%}
+        --dp-today-background-color: {{ section.settings.today_background_color }};
+      {%- endif -%}
+      {%- if section.settings.today_text_color != blank and section.settings.today_text_color.alpha > 0 -%}
+        --dp-today-text-color: {{ section.settings.today_text_color }};
+      {%- endif -%}
+      {%- if section.settings.other_month_background_color != blank and section.settings.other_month_background_color.alpha > 0 -%}
+        --dp-other-month-background-color: {{ section.settings.other_month_background_color }};
+      {%- endif -%}
+      {%- if section.settings.other_month_text_color != blank and section.settings.other_month_text_color.alpha > 0 -%}
+        --dp-other-month-text-color: {{ section.settings.other_month_text_color }};
+      {%- endif -%}
+      {%- if section.settings.calendar_title_text_color != blank and section.settings.calendar_title_text_color.alpha > 0 -%}
+        --dp-calendar-title-text-color: {{ section.settings.calendar_title_text_color | default: '#121212' }};
+      {%- endif -%}
+      {%- if section.settings.navigation_arrow_color != blank and section.settings.navigation_arrow_color.alpha > 0 -%}
+        --dp-navigation-arrow-color: {{ section.settings.navigation_arrow_color }};
+      {%- endif -%}
+      {%- if section.settings.modal_event_text_color != blank and section.settings.modal_event_text_color.alpha > 0 -%}
+        --dp-modal-event-text-color: {{ section.settings.modal_event_text_color }};
+      {%- endif -%}
+      {%- if section.settings.modal_background_color != blank and section.settings.modal_background_color.alpha > 0 -%}
+        --dp-modal-background-color: {{ section.settings.modal_background_color }};
+      {%- endif -%}
+      {%- if section.settings.modal_content_background_color != blank and section.settings.modal_content_background_color.alpha > 0 -%}
+        --dp-modal-content-background-color: {{ section.settings.modal_content_background_color }};
+      {%- endif -%}
+      {%- if section.settings.event_details_border_color != blank and section.settings.event_details_border_color.alpha > 0 -%}
+        --dp-event-details-border-color: {{ section.settings.event_details_border_color }};
+      {%- endif -%}
+    }
+  {%- endif -%}
+
+  .DP--{{ section_id }} .wbs-pro__background-image {
+    position: absolute;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-navigation {
+    display: flex;
+    align-items: center;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-navigation button {
+    background: none;
+    border: none;
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+    cursor: pointer;
+    padding: 0 15px;
+    color: var(--dp-navigation-arrow-color, #333333);
+    fill: var(--dp-navigation-arrow-color, #333333);
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-title {
+    margin: 0 15px;
+    min-width: 200px;
+    text-align: center;
+    color: var(--dp-calendar-title-text-color, #333333);
+    font-size: calc(var(--dp-g-heading-size, var(--dp-heading-size, 35px)) * {{ section.settings.text_size | times: 0.01 }});
+    {%- if section.settings.override_theme_font != blank -%}
+      font-family: var(--heading-font);
+      font-weight: var(--heading-font-weight);
+      font-style: var(--heading-font-style);
+    {%- endif -%}
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-controls {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-button-today {
+    padding: 8px 16px;
+    background: var(--dp-button-background-color, #f0f0f0);
+    border: 1px solid var(--dp-button-border-color, #ddd);
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--dp-button-text-color, #333333);
+    {%- if section.settings.override_theme_font != blank -%}
+      font-family: var(--main-font);
+      font-weight: var(--main-font-weight);
+      font-style: var(--main-font-style);
+    {%- endif -%}
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-button-today:hover {
+    background: var(--dp-button-hover-background-color, #e0e0e0);
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-container {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    text-align: center;
+    font-weight: bold;
+    background: var(--dp-weekdays-background-color, #f0f0f0);
+    color: var(--dp-weekdays-text-color, #333333);
+    padding: 10px 0;
+    border-radius: 4px 4px 0 0;
+    width: 100%;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__weekdays div,
+  .DP--{{ section_id }} .wbs-pro__weekday {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-auto-rows: minmax(120px, auto);
+    border: 1px solid var(--dp-grid-border-color, #ddd);
+    border-radius: 0 0 4px 4px;
+    width: 100%;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__calendar-day {
+    border: 1px solid var(--dp-day-border-color, #ddd);
+    padding: 10px;
+    min-height: 120px;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--dp-day-background-color);
+    min-width: 0; /* Prevents content from expanding the cell */
+  }
+
+  .DP--{{ section_id }} .wbs-pro__day-number {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--dp-day-number-text-color, #333333);
+  }
+
+  .DP--{{ section_id }} .wbs-pro__today .wbs-pro__day-number {
+    background-color: var(--dp-today-background-color, #4e73df);
+    color: var(--dp-today-text-color, white);
+  }
+
+  .DP--{{ section_id }} .wbs-pro__other-month {
+    background-color: var(--dp-other-month-background-color, #f9f9f9);
+    color: var(--dp-other-month-text-color, #aaa);
+  }
+
+  .DP--{{ section_id }} .wbs-pro__event-container {
+    margin-top: 30px;
+    overflow-y: auto;
+    max-height: 80px;
+    width: 100%;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__event {
+    margin-bottom: 5px;
+    padding: 5px 8px;
+    border-radius: 3px;
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.008 }});
+    color: var(--dp-event-text-color, white);
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    box-sizing: border-box;
+    width: 100%;
+    border-left: 4px solid;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__event-time {
+    font-weight: bold;
+    margin-right: 4px;
+    font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+    opacity: 0.9;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__event-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: bottom;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__event-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--dp-modal-background-color, rgba(0, 0, 0, 0.5));
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__modal-content {
+    background-color: var(--dp-modal-content-background-color, white);
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 95%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    color: var(--dp-modal-event-text-color, #333333);
+  }
+
+  .DP--{{ section_id }} .wbs-pro__modal-title {
+    font-size: calc(var(--dp-g-small-heading-size, var(--dp-small-heading-size, 24px)) * {{ section.settings.text_size | times: 0.01 }});
+    {%- if section.settings.override_theme_font != blank -%}
+      font-family: var(--heading-font);
+      font-weight: var(--heading-font-weight);
+      font-style: var(--heading-font-style);
+    {%- endif -%}
+  }
+
+  .DP--{{ section_id }} .wbs-pro__close-modal {
+    position: absolute;
+    top: 0px;
+    right: 010px;
+    font-size: 24px;
+    cursor: pointer;
+    font-family: system-ui;
+  }
+
+  .DP--{{ section_id }} .wbs-pro__event-details {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--dp-event-details-border-color, #eee);
+  }
+
+  {%- if section.settings.custom_css != blank -%}
+    {%- assign custom_section_declarations = section.settings.custom_css | split: '}' -%}
+    {%- for declaration in custom_section_declarations -%}
+      {%- if declaration contains '{' -%}
+        #DP--{{ section_id }} {{ declaration }} }
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  /* Smaller mobile devices */
+  @media (max-width: 480px) {
+    .DP--{{ section_id }} {
+      --dp-heading-size: 24px;
+      --dp-body-size: 14px;
+      --dp-small-heading-size: 16px;
+    }
+
+    .DP--{{ section_id }} .wbs-pro__sizer {
+      min-width: 95%;
+    }
+
+    .DP--{{ section_id }} .wbs-pro__calendar-navigation {
+      margin: auto;
+    }
+
+    .DP--{{ section_id }} .wbs-pro__calendar-title {
+      flex: 1;
+    }
+
+    .DP--{{ section_id }} .wbs-pro__calendar-controls {
+      justify-content: center;
+      margin: 0 auto;
+      margin-top: 10px;
+    }
+
+    .DP--{{ section_id }} .wbs-pro__calendar-controls button,
+    .DP--{{ section_id }} .wbs-pro__view-button {
+      padding: 6px 10px;
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.008 }});
+    }
+
+    .DP--{{ section_id }} .wbs-pro__weekdays {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .DP--{{ section_id }} .wbs-pro__calendar-grid {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      grid-auto-rows: minmax(80px, auto);
+    }
+
+    .DP--{{ section_id }} .wbs-pro__weekdays div,
+    .DP--{{ section_id }} .wbs-pro__weekday {
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+      padding: 5px 0;
+    }
+
+    .DP--{{ section_id }} .wbs-pro__day-number {
+      width: 20px;
+      height: 20px;
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+    }
+
+    .DP--{{ section_id }} .wbs-pro__calendar-day {
+      min-height: 60px;
+      padding: 3px 2px;
+    }
+
+    .DP--{{ section_id }} .wbs-pro__event-container {
+      max-height: 40px;
+      margin-top: 20px;
+    }
+
+    .DP--{{ section_id }} .wbs-pro__event {
+      padding: 1px 3px;
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+      border-radius: 2px;
+      margin-bottom: 1px;
+    }
+
+    .DP--{{ section_id }} .wbs-pro__event-time {
+      min-width: 30px;
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+    }
+
+    .DP--{{ section_id }} .wbs-pro__modal-content {
+      padding: 15px;
+    }
+
+    {%- if section.settings.mobile_custom_css != blank -%}
+      {%- assign mobile_custom_declarations = section.settings.mobile_custom_css | split: '}' -%}
+      {%- for declaration in mobile_custom_declarations -%}
+        {%- if declaration contains '{' -%}
+          #DP--{{ section_id }} {{ declaration }} }
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  }
+
+</style>
+
+<section id="DP--{{ section_id }}" class="DP--{{ section_id }} wbs-pro__main wbs-pro__section {{ section.settings.custom_classes }} {% if section.settings.custom_style == 'scheme' -%}{{ section.settings.style_scheme }}{% elsif section.settings.custom_style == 'global' -%}wbs-pro__global-style{% else -%}wbs-pro__section-style{% endif %}">
+  {%- if section.settings.anchor_id != blank -%}
+    <div id="{{ section.settings.anchor_id | remove: '#' | handleize }}" class="wbs-pro__anchor-id" style="height: 0; overflow: hidden;"></div>
+  {%- endif -%}
+  <div class="wbs-pro__background">
+    {%- if section.settings.show_background_image -%}
+      {%- if section.settings.background_image != blank -%}
+        {{ section.settings.background_image | image_url: width: section.settings.background_image.width | image_tag:  widths: widths, sizes: '100vw', class: 'wbs-pro__background-image' }}
+      {%- elsif enable_metafield_detect == false -%}
+        <img src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/{{ placeholder_image_id }}_1600x.jpg"
+            class="wbs-pro__background-image"
+            alt=""
+            loading="lazy"
+            class="wbs-pro__background-image"
+            width="1600"
+            height="1000">
+      {%- endif -%}
+    {%- endif -%}
+    <div class="wbs-pro__sizer">
+      <div class="wbs-pro__calendar-header">
+        <div class="wbs-pro__calendar-navigation">
+          <button class="wbs-pro__calendar-button wbs-pro__calendar-button-prev" data-calendar="prev-month"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"/></svg></button>
+          <h2 class="wbs-pro__calendar-title wbs-pro__heading" data-calendar="current-month"></h2>
+          <button class="wbs-pro__calendar-button wbs-pro__calendar-button-next" data-calendar="next-month"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"/></svg></button>
+        </div>
+
+        <div class="wbs-pro__calendar-controls">
+          <button class="wbs-pro__calendar-button-today" data-calendar="today-btn">{{ 'today' | t }}</button>
+        </div>
+      </div>
+
+      <div class="wbs-pro__calendar-container">
+        <div class="wbs-pro__weekdays" data-calendar="month-weekdays">
+          <div class="wbs-pro__weekday wbs-pro__weekday-sun">Sun</div>
+          <div class="wbs-pro__weekday wbs-pro__weekday-mon">Mon</div>
+          <div class="wbs-pro__weekday wbs-pro__weekday-tue">Tue</div>
+          <div class="wbs-pro__weekday wbs-pro__weekday-wed">Wed</div>
+          <div class="wbs-pro__weekday wbs-pro__weekday-thu">Thu</div>
+          <div class="wbs-pro__weekday wbs-pro__weekday-fri">Fri</div>
+          <div class="wbs-pro__weekday wbs-pro__weekday-sat">Sat</div>
+        </div>
+        <div data-calendar="calendar-grid" class="wbs-pro__calendar-grid"></div>
+      </div>
+
+      <div data-calendar="event-modal" class="wbs-pro__event-modal">
+        <div class="wbs-pro__modal-content">
+          <span class="wbs-pro__close-modal">&times;</span>
+          <h3 class="wbs-pro__modal-title wbs-pro__small-heading" data-calendar="modal-title"></h3>
+          <div class="wbs-pro__modal-description wbs-pro__text wbs-pro__rte" data-calendar="modal-description"></div>
+          <div class="wbs-pro__event-details">
+            <p class="wbs-pro__modal-date"><strong>Date:</strong> <span data-calendar="modal-date"></span></p>
+            <p class="wbs-pro__modal-time"><strong>Time:</strong> <span data-calendar="modal-time"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Events calendar",
+  "class": "events-calendar-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+  "type": "header",
+  "content": "Settings"
+},
+{
+  "type": "text",
+  "id": "timezone",
+  "label": "Timezone",
+  "default": "America/New_York",
+  "info": "Enter IANA timezone (e.g., America/New_York, Europe/London, Asia/Tokyo, UTC)"
+},
+{
+  "type": "checkbox",
+  "id": "show_timezone",
+  "label": "Show timezone abbreviation",
+  "default": true,
+  "info": "Show timezone (like EST, PST) next to event times"
+},
+    {
+      "type": "color",
+      "id": "background_solid",
+      "label": "Background",
+      "alpha": true
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background gradient",
+      "info": "Background gradient replaces background where possible."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_background_image",
+      "label": "Show background image",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_full_design_control",
+      "label": "Enable full design control",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 80,
+      "max": 150,
+      "step": 5,
+      "default": 100,
+      "unit": "%"
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "header",
+      "content": "Full design control"
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "header",
+      "content": "Button Colors"
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "button_hover_background_color",
+      "label": "Button hover background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "header",
+      "content": "Calendar Grid Colors"
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "weekdays_background_color",
+      "label": "Weekdays background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "weekdays_text_color",
+      "label": "Weekdays text",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "grid_border_color",
+      "label": "Grid border",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "day_border_color",
+      "label": "Day border",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "day_background_color",
+      "label": "Day background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "day_number_text_color",
+      "label": "Day number text",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "header",
+      "content": "Today/Current Day Colors"
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "today_background_color",
+      "label": "Today background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "today_text_color",
+      "label": "Today text",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "header",
+      "content": "Other Month Colors"
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "other_month_background_color",
+      "label": "Other month background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "other_month_text_color",
+      "label": "Other month text",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "header",
+      "content": "Navigation & Heading Colors"
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "calendar_title_text_color",
+      "label": "Calendar title text",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "navigation_arrow_color",
+      "label": "Navigation arrows",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "header",
+      "content": "Modal Colors"
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "modal_event_text_color",
+      "label": "Modal event text",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "modal_background_color",
+      "label": "Modal background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "modal_content_background_color",
+      "label": "Modal content background",
+      "alpha": true
+    },
+    {
+      "visible_if": "{{ section.settings.enable_full_design_control == true }}",
+      "type": "color",
+      "id": "event_details_border_color",
+      "label": "Event details border",
+      "alpha": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 60,
+      "max": 100,
+      "default": 100,
+      "unit": "%"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "type": "range",
+      "id": "inner_padding",
+      "label": "Inner padding",
+      "info": "Only applies to top and bottom.",
+      "min": 0,
+      "max": 100,
+      "default": 60,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "outer_margin",
+      "label": "Outer margin",
+      "info": "Only applies to top and bottom.",
+      "min": 0,
+      "max": 100,
+      "default": 0,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "CSS"
+    },
+    {
+      "type": "liquid",
+      "id": "mobile_custom_css",
+      "label": "Mobile CSS",
+      "info": "Applied on screens less than 480px."
+    },
+  
+    {
+      "visible_if": "{{ false }}",
+      "type": "select",
+      "id": "custom_style",
+      "label": "Custom style*",
+      "info": "* Custom styles section is required.",
+      "options": [
+        {
+          "value": "section",
+          "label": "Default section settings"
+          },
+        {
+          "value": "scheme",
+          "label": "Apply scheme"
+        },
+        {
+          "value": "global",
+          "label": "Inherit global style"
+        }
+      ],
+      "default": "global"
+    },
+    {
+      "visible_if": "{{ section.settings.custom_style == 'scheme' }}",
+      "type": "text",
+      "id": "style_scheme",
+      "label": "Style scheme name"
+    },
+    {
+      "type": "checkbox",
+      "id": "override_theme_font",
+      "label": "Override default theme font",
+      "default": false
+    },
+    {
+      "visible_if": "{{ section.settings.override_theme_font == true }}",
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading",
+      "default": "serif"
+    },
+    {
+      "visible_if": "{{ section.settings.override_theme_font == true }}",
+      "type": "font_picker",
+      "id": "main_font",
+      "label": "Text",
+      "default": "sans-serif"
+    },
+    {
+      "visible_if": "{{ false }}",
+      "type": "checkbox",
+      "id": "enable_metafield_detect",
+      "label": "Enable metafield detection",
+      "default": false,
+      "info": "Hide section if content is not detected."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "event",
+      "name": "Event",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Event"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "start_date",
+          "label": "Date (YYYY-MM-DD)"
+        },
+        {
+          "type": "checkbox",
+          "id": "all_day",
+          "label": "All day event",
+          "default": true
+        },
+        {
+          "visible_if": "{{ block.settings.all_day == false }}",
+          "type": "text",
+          "id": "start_time",
+          "label": "Start time (HH:MM)"
+        },
+        {
+          "visible_if": "{{ block.settings.all_day == false }}",
+          "type": "text",
+          "id": "end_date",
+          "label": "End date (YYYY-MM-DD)"
+        },
+        {
+          "visible_if": "{{ block.settings.all_day == false }}",
+          "type": "text",
+          "id": "end_time",
+          "label": "End time (HH:MM)"
+        },
+        {
+          "type": "header",
+          "content": "Recurrence"
+        },
+        {
+          "type": "checkbox",
+          "id": "recurring",
+          "label": "Event repeats",
+          "default": false
+        },
+        {
+          "visible_if": "{{ block.settings.recurring == true }}",
+          "type": "select",
+          "id": "frequency",
+          "label": "Frequency",
+          "options": [
+            { "value": "weekly", "label": "Weekly" },
+            { "value": "monthly", "label": "Monthly" }
+          ],
+          "default": "weekly"
+        },
+        {
+          "visible_if": "{{ block.settings.recurring == true }}",
+          "type": "text",
+          "id": "repeat_until_date",
+          "label": "Repeat until (YYYY-MM-DD)",
+          "info": "Leave blank to repeat for one year"
+        },
+        {
+          "type": "header",
+          "content": "Design"
+        },
+
+        {
+          "type": "color",
+          "id": "event_color",
+          "label": "Event background",
+          "default": "#ccc"
+        },
+        {
+          "type": "color",
+          "id": "event_border_color",
+          "label": "Event side border",
+          "default": "#121212"
+        },
+        {
+          "type": "color",
+          "id": "event_text_color",
+          "label": "Event text",
+          "default": "#121212"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Events calendar",
+      "category": "Events"
+    }
+  ],
+   "locales": {
+     "en": {
+       "january": "January",
+       "february": "February",
+       "march": "March",
+       "april": "April",
+       "may": "May",
+       "june": "June",
+       "july": "July",
+       "august": "August",
+       "september": "September",
+       "october": "October",
+       "november": "November",
+       "december": "December",
+       "today": "Today"
+     }
+   }
+}
+{% endschema %}
+
+{%- comment -%} External scripts {%- endcomment -%}
+<script data-wbs-pro-external-js="{{ section_id }}" src="https://unpkg.com/ical.js@2.2.0/dist/ical.es5.min.cjs" defer></script>
+<script data-wbs-pro-external-js="{{ section_id }}" src="https://cdn.jsdelivr.net/npm/luxon@3.4.0/build/global/luxon.min.js" defer></script>
+{%- comment -%} JavaScript {%- endcomment -%}
+<script type="application/json" data-wbs-pro="{{ section_id }}">
+  {
+    "id": {{ section_id | json }},
+    "timezone": {{ section.settings.timezone | json }},
+    "show_timezone": {{ section.settings.show_timezone | json }},
+    "ical_url": {{ section.settings.ical_url | json }},
+    "ical_event_color": {{ section.settings.ical_event_color | json }},
+    "ical_event_border_color": {{ section.settings.ical_event_border_color | json }},
+    "ical_event_text_color": {{ section.settings.ical_event_text_color | json }},
+    "months": {
+      "0": {{ 'january' | t | json }},
+      "1": {{ 'february' | t | json }},
+      "2": {{ 'march' | t | json }},
+      "3": {{ 'april' | t | json }},
+      "4": {{ 'may' | t | json }},
+      "5": {{ 'june' | t | json }},
+      "6": {{ 'july' | t | json }},
+      "7": {{ 'august' | t | json }},
+      "8": {{ 'september' | t | json }},
+      "9": {{ 'october' | t | json }},
+      "10": {{ 'november' | t | json }},
+      "11": {{ 'december' | t | json }}
+    },
+    "events": [
+      {% for block in section.blocks %}
+        {
+          "id": {{ forloop.index }},
+          "title": {{ block.settings.title | json }},
+          "description": {{ block.settings.description | json }},
+          "start_date": {{ block.settings.start_date | json }},
+          "start_time": {{ block.settings.start_time | json }},
+          "end_date": {{ block.settings.end_date | json }},
+          "end_time": {{ block.settings.end_time | json }},
+          "all_day": {{ block.settings.all_day | json }},
+          "recurring": {{ block.settings.recurring | json }},
+          "frequency": {{ block.settings.frequency | json }},
+          "repeat_until_date": {{ block.settings.repeat_until_date | json }},
+          "event_color": {{ block.settings.event_color | json }},
+          "event_border_color": {{ block.settings.event_border_color | json }},
+          "event_text_color": {{ block.settings.event_text_color | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ]
+  }
+</script>
+
+<script data-wbs-pro-js="{{ section_id }}" type="module" defer>
+(function(){
+  const wbspro = {
+    settings: {},
+    // --- Calendar utility methods ---
+    formatMonthYear(date) {
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      return `${this.settings.months[month]} ${year}`;
+    },
+    formatTime(date) {
+      return new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: this.settings.timezone
+      }).format(date);
+    },
+    formatDate(date) {
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: this.settings.timezone
+      }).format(date);
+    },
+    formatShortDate(date) {
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        timeZone: this.settings.timezone
+      }).format(date);
+    },
+    formatWeekday(date) {
+      return new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        timeZone: this.settings.timezone
+      }).format(date);
+    },
+    getTimezoneAbbr() {
+      const timezoneParts = new Intl.DateTimeFormat('en-US', {
+        timeZoneName: 'short',
+        timeZone: this.settings.timezone
+      }).formatToParts(new Date());
+      const timezone = timezoneParts.find(part => part.type === 'timeZoneName');
+      return timezone ? timezone.value : '';
+    },
+    getFirstDayOfMonth(year, month) {
+      return new Date(year, month, 1).getDay();
+    },
+    getLastDayOfMonth(year, month) {
+      return new Date(year, month + 1, 0).getDate();
+    },
+    isToday(year, month, day) {
+      const today = new Date();
+      return year === today.getFullYear() && month === today.getMonth() && day === today.getDate();
+    },
+
+    load: function(section) {
+      // DOM Elements (scoped to section)
+      const calendarGrid = section.querySelector('[data-calendar="calendar-grid"]');
+      const currentMonthEl = section.querySelector('[data-calendar="current-month"]');
+      const prevBtn = section.querySelector('[data-calendar="prev-month"]');
+      const nextBtn = section.querySelector('[data-calendar="next-month"]');
+      const todayBtn = section.querySelector('[data-calendar="today-btn"]');
+      const modal = section.querySelector('[data-calendar="event-modal"]');
+      const modalTitle = section.querySelector('[data-calendar="modal-title"]');
+      const modalDescription = section.querySelector('[data-calendar="modal-description"]');
+      const modalDate = section.querySelector('[data-calendar="modal-date"]');
+      const modalTime = section.querySelector('[data-calendar="modal-time"]');
+      const closeModal = section.querySelector('.wbs-pro__close-modal');
+
+      // Calendar settings
+      const calendarTimezone = wbspro.settings.timezone;
+      const showTimezone = wbspro.settings.show_timezone;
+      const icalUrl = wbspro.settings.ical_url;
+
+      // Current date
+      let currentDate = new Date();
+      const today = new Date();
+      let currentMonth = currentDate.getMonth();
+      let currentYear = currentDate.getFullYear();
+
+      // --- Centralized Event Store ---
+      let allEvents = [];
+
+
+      // Helper: parse and expand manual block events
+      function parseManualEvents(rangeStart, rangeEnd) {
+        const DateTime = window.luxon.DateTime;
+        const timezone = wbspro.settings.timezone;
+        const expandedEvents = [];
+
+        wbspro.settings.events.forEach(block => {
+          if (!block.title) return; // Skip blocks without titles
+
+          // Use today's date if start_date is blank
+          const startDate = block.start_date || DateTime.now().setZone(timezone).toISODate();
+          // For end_date, use the provided value only if it's not empty and not the schema default
+          const endDate = (block.end_date && block.end_date.trim() && block.end_date !== "2025-04-11") ? block.end_date : startDate;
+
+          const startTime = block.all_day ? '00:00:00' : (block.start_time || '00:00');
+          const endTime = block.all_day ? '23:59:59' : (block.end_time || '23:59');
+
+          const firstStart = DateTime.fromISO(`${startDate}T${startTime}`, { zone: timezone });
+          const firstEnd = DateTime.fromISO(`${endDate}T${endTime}`, { zone: timezone });
+          const duration = firstEnd.diff(firstStart);
+
+          // If not recurring, just add the single event if it's in range
+          if (!block.recurring) {
+            if (firstEnd >= rangeStart && firstStart <= rangeEnd) {
+              expandedEvents.push({
+                id: `manual-${block.id}`,
+                title: block.title,
+                description: block.description,
+                startDate: firstStart,
+                endDate: firstEnd,
+                all_day: block.all_day,
+                event_color: block.event_color,
+                event_border_color: block.event_border_color,
+                event_text_color: block.event_text_color
+              });
+            }
+            return;
+          }
+
+          // If recurring, expand all occurrences
+          const until = block.repeat_until_date
+            ? DateTime.fromISO(block.repeat_until_date, { zone: timezone }).endOf('day')
+            : firstStart.plus({ years: 1 });
+
+          let current = firstStart;
+          while (current <= until) {
+            const currentEnd = current.plus(duration);
+
+            // Only add events that are within the visible range
+            if (currentEnd >= rangeStart && current <= rangeEnd) {
+              expandedEvents.push({
+                id: `manual-${block.id}-${current.toISODate()}`,
+                title: block.title,
+                description: block.description,
+                startDate: current,
+                endDate: currentEnd,
+                all_day: block.all_day,
+                event_color: block.event_color,
+                event_border_color: block.event_border_color,
+                event_text_color: block.event_text_color
+              });
+            }
+
+            // Stop expanding if we're past the visible range and the until date
+            if (current > rangeEnd && current > until) break;
+
+            if (block.frequency === 'weekly') {
+              current = current.plus({ weeks: 1 });
+            } else if (block.frequency === 'monthly') {
+              current = current.plus({ months: 1 });
+            } else {
+              break;
+            }
+          }
+        });
+        return expandedEvents;
+      }
+
+      // Helper: parse iCal events using ical.js
+      function parseIcalEvents(icsData, rangeStart, rangeEnd) {
+        const DateTime = window.luxon.DateTime;
+        const timezone = wbspro.settings.timezone;
+        const jcalData = ICAL.parse(icsData);
+        const comp = new ICAL.Component(jcalData);
+        const vevents = comp.getAllSubcomponents('vevent');
+        let expandedEvents = [];
+
+        vevents.forEach(event => {
+          const e = new ICAL.Event(event);
+
+          if (e.isRecurring()) {
+            const expand = e.iterator();
+            let next;
+            while ((next = expand.next())) {
+              const occurrence = e.getOccurrenceDetails(next);
+              const occStart = DateTime.fromJSDate(occurrence.startDate.toJSDate()).setZone(timezone);
+              const occEnd = DateTime.fromJSDate(occurrence.endDate.toJSDate()).setZone(timezone);
+
+              // Only include occurrences within the visible range
+              if (occEnd < rangeStart) continue;
+              if (occStart > rangeEnd) break;
+
+              expandedEvents.push({
+                id: e.uid,
+                title: e.summary,
+                description: e.description,
+                startDate: occStart,
+                endDate: occEnd,
+                all_day: occurrence.startDate.isDate,
+                event_color: wbspro.settings.ical_event_color,
+                event_border_color: wbspro.settings.ical_event_border_color,
+                event_text_color: wbspro.settings.ical_event_text_color
+              });
+            }
+          } else {
+            // Non-recurring event
+            let start, end, all_day;
+            if (e.startDate.isDate) {
+              start = DateTime.fromISO(e.startDate.toString(), { zone: timezone });
+              end = start.endOf('day');
+              all_day = true;
+            } else {
+              start = DateTime.fromMillis(e.startDate.toJSDate().getTime(), { zone: 'utc' }).setZone(timezone);
+              end = DateTime.fromMillis(e.endDate.toJSDate().getTime(), { zone: 'utc' }).setZone(timezone);
+              all_day = false;
+            }
+            expandedEvents.push({
+              id: e.uid,
+              title: e.summary,
+              description: e.description,
+              startDate: start,
+              endDate: end,
+              all_day,
+              event_color: wbspro.settings.ical_event_color,
+              event_border_color: wbspro.settings.ical_event_border_color,
+              event_text_color: wbspro.settings.ical_event_text_color
+            });
+          }
+        });
+
+        return expandedEvents;
+      }
+
+      // Main: Fetch, combine, and update the central event store
+      async function fetchAndRenderEvents(year, month) {
+        const DateTime = window.luxon.DateTime;
+        const timezone = wbspro.settings.timezone;
+
+        // Define the visible range for fetching/expanding
+        const viewStart = DateTime.fromObject({ year, month: month + 1, day: 1 }, { zone: timezone });
+        const rangeStart = viewStart.startOf('month').startOf('week').minus({ days: 1 });
+        const rangeEnd = viewStart.endOf('month').endOf('week').plus({ days: 1 });
+
+        // Get manual events
+        const manualEvents = parseManualEvents(rangeStart, rangeEnd);
+
+        // Get iCal events
+        let icalEvents = [];
+        if (icalUrl) {
+          try {
+            const proxiedUrl = `https://corsproxy.io/?${encodeURIComponent(icalUrl)}`;
+            const response = await fetch(proxiedUrl);
+            const icsData = await response.text();
+            icalEvents = parseIcalEvents(icsData, rangeStart, rangeEnd);
+          } catch (err) {
+            console.error("iCal fetch failed", err);
+          }
+        }
+
+        // Combine events and render the calendar
+        allEvents = manualEvents.concat(icalEvents);
+        renderCalendar();
+      }
+
+      // --- Core Calendar Rendering Logic ---
+    function getEventsForDate(year, month, day) {
+        const DateTime = window.luxon.DateTime;
+        const timezone = wbspro.settings.timezone;
+        const dayStart = DateTime.fromObject({ year, month: month + 1, day, hour: 0, minute: 0, second: 0 }, { zone: timezone });
+        const dayEnd = dayStart.endOf('day');
+        return allEvents.filter(event => {
+          return event.startDate <= dayEnd && event.endDate > dayStart;
+        });
+      }
+
+      function updateCurrentDateDisplay() {
+        currentMonthEl.textContent = wbspro.formatMonthYear(new Date(currentYear, currentMonth));
+      }
+
+      function openEventModal(event) {
+        modalTitle.textContent = event.title;
+        modalDescription.innerHTML = event.description || '';
+
+        let dateString;
+        const start = event.startDate.toJSDate();
+        const end = event.endDate.toJSDate();
+
+        if (event.startDate.hasSame(event.endDate, 'day')) {
+          dateString = wbspro.formatDate(start);
+        } else {
+          dateString = `${wbspro.formatDate(start)} - ${wbspro.formatDate(end)}`;
+        }
+        modalDate.textContent = dateString;
+
+        let timeString;
+        if (event.all_day) {
+          timeString = 'All day';
+        } else {
+          const timezoneAbbr = showTimezone ? ` ${wbspro.getTimezoneAbbr()}` : '';
+          timeString = `${wbspro.formatTime(start)} - ${wbspro.formatTime(end)}${timezoneAbbr}`;
+        }
+        modalTime.textContent = timeString;
+
+        modal.style.display = 'flex';
+      }
+
+      function createDayElement(year, month, day, isOtherMonth) {
+        if (month < 0) {
+          month = 11;
+          year--;
+        } else if (month > 11) {
+          month = 0;
+          year++;
+        }
+        const dayEl = document.createElement('div');
+        dayEl.className = 'wbs-pro__calendar-day';
+        if (isOtherMonth) dayEl.classList.add('wbs-pro__other-month');
+        if (wbspro.isToday(year, month, day)) dayEl.classList.add('wbs-pro__today');
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'wbs-pro__day-number';
+        dayNumber.textContent = day;
+        dayEl.appendChild(dayNumber);
+        const eventContainer = document.createElement('div');
+        eventContainer.className = 'wbs-pro__event-container';
+        const dayEvents = getEventsForDate(year, month, day);
+        dayEvents.forEach(event => {
+          const eventEl = document.createElement('div');
+          eventEl.className = `wbs-pro__event ${event.all_day ? 'wbs-pro__all-day' : 'wbs-pro__regular'}`;
+
+          // Apply custom colors if available
+          if (event.event_color) {
+            eventEl.style.backgroundColor = event.event_color;
+          }
+          if (event.event_border_color) {
+            eventEl.style.borderLeftColor = event.event_border_color;
+          }
+          if (event.event_text_color) {
+            eventEl.style.color = event.event_text_color;
+          }
+
+          if (event.all_day) {
+            eventEl.innerHTML = `<span class="wbs-pro__event-title">${event.title}</span>`;
+          } else {
+            const timeFormatted = event.startDate.toFormat('h:mm a');
+            eventEl.innerHTML = `<span class="wbs-pro__event-time">${timeFormatted}</span> <span class="wbs-pro__event-title">${event.title}</span>`;
+          }
+          eventEl.dataset.eventId = event.id;
+          eventEl.addEventListener('click', () => openEventModal(event));
+          eventContainer.appendChild(eventEl);
+        });
+        dayEl.appendChild(eventContainer);
+        return dayEl;
+      }
+
+    function renderMonthView() {
+      updateCurrentDateDisplay();
+      calendarGrid.innerHTML = '';
+      calendarGrid.className = 'wbs-pro__calendar-grid';
+        const firstDay = wbspro.getFirstDayOfMonth(currentYear, currentMonth);
+        const lastDay = wbspro.getLastDayOfMonth(currentYear, currentMonth);
+        const prevMonthLastDay = wbspro.getLastDayOfMonth(currentYear, currentMonth - 1);
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const day = prevMonthLastDay - i;
+        const dayEl = createDayElement(currentYear, currentMonth - 1, day, true);
+        calendarGrid.appendChild(dayEl);
+      }
+      for (let day = 1; day <= lastDay; day++) {
+        const dayEl = createDayElement(currentYear, currentMonth, day, false);
+        calendarGrid.appendChild(dayEl);
+      }
+      const totalDaysShown = firstDay + lastDay;
+      const rowsNeeded = Math.ceil(totalDaysShown / 7);
+      if (rowsNeeded <= 5) {
+        const remainingDays = 35 - (firstDay + lastDay);
+        for (let day = 1; day <= remainingDays; day++) {
+          const dayEl = createDayElement(currentYear, currentMonth + 1, day, true);
+          calendarGrid.appendChild(dayEl);
+        }
+      }
+    }
+
+      function renderCalendar() {
+        renderMonthView();
+      }
+
+      // --- Event Listeners (Setup once) ---
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+    prevBtn.addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      fetchAndRenderEvents(currentYear, currentMonth);
+    });
+    nextBtn.addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      fetchAndRenderEvents(currentYear, currentMonth);
+    });
+    todayBtn.addEventListener('click', () => {
+      const today = new Date();
+      currentMonth = today.getMonth();
+      currentYear = today.getFullYear();
+      fetchAndRenderEvents(currentYear, currentMonth);
+    });
+
+    // Initial fetch and render
+    fetchAndRenderEvents(currentYear, currentMonth);
+    },
+    unload: function(section) {
+      // Clean up if needed (remove event listeners, etc.)
+    }
+  };
+
+    wbspro.settings = JSON.parse(document.querySelector('[data-wbs-pro="{{ section_id }}"]').innerHTML);
+    // Fix timezone if null or invalid
+if (!wbspro.settings.timezone || wbspro.settings.timezone === 'null') {
+  wbspro.settings.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+}
+    const sectionId = {{ section_id | json }};
+    const section = document.querySelector(`#DP--${sectionId}`);
+    if (sectionId == wbspro.settings.id) {
+      wbspro.load(section);
+    }
+    window.addEventListener('shopify:section:unload', function (e) {
+      const settings = document.querySelector(`[data-wbs-pro="${e.detail.sectionId}"]`);
+      const sectionId = e.detail.sectionId;
+      const section = document.querySelector(`#DP--${e.detail.sectionId}`);
+      if (sectionId == wbspro.settings.id){
+        wbspro.unload(section);
+      }
+    });
+  })();
+</script>
