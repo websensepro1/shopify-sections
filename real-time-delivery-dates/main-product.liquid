@@ -1,1 +1,14 @@
 
+<style>
+.delivery-date, .delivery-date p, .delivery-date div { display:inline;}
+</style>
+
+{% if product.metafields.custom.number_of_days_for_delivery != blank %}
+                      <div class="delivery-date">
+                        <p><b>Estimated Delivery Date:</b></p>
+                          <div id="m-date">
+                          {% assign days_to_add = product.metafields.custom.number_of_days_for_delivery | date: "%s" | times: 86400 %}
+{% assign future_date = 'now' | date: "%s" | plus: days_to_add | date: "%d %b" %} {{ future_date }}
+                         </div>
+                      </div>
+                      {% endif %}
