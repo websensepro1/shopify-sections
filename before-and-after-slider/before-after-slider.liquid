@@ -1,1 +1,4776 @@
+{%- comment -%} Assign: Preview section js fix {%- endcomment -%}
+{%- assign section_id = section.id | replace: '+', '' -%}
 
+{% comment %} Blocks: out of order (not within loop) {% endcomment %}
+{% assign slider_block = section.blocks | where: 'type', 'slider_block' %}
+
+{%- comment -%} Images: all placeholders {%- endcomment -%}
+{%- assign placeholder_image_id = 'RbbdzZBKRDY' -%}
+{%- assign placeholder_image_id_2 = 'DBtgQI-9XdM' -%}
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{%- comment -%} Layout: has user entered measurement value into max-width field? {%- endcomment -%}
+{%- if section.settings.max_width contains 'px' or section.settings.max_width contains '%' -%}
+  {%- assign max_width = section.settings.max_width -%}
+{%- else -%}
+  {%- assign max_width = section.settings.max_width | append: 'px' -%}
+{%- endif -%}
+
+{%- comment -%} Text: custom font_picker values {%- endcomment -%}
+{%- capture font_settings_list -%}
+{{ section.settings.main_font | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
+{{ section.settings.heading_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+{%- endcapture -%}
+{%- assign font_array = font_settings_list | split: '~' -%}
+
+{%- capture minify -%}
+{%- comment -%} CSS {%- endcomment -%}
+<style>
+
+/*** Global styles ***/
+
+[id^="DP--"] {
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  text-transform: unset;
+  letter-spacing: unset;
+  margin: unset;
+  padding: unset;
+  z-index: 1;
+}
+
+.wsp-section__section * {
+  box-sizing: border-box !important;
+}
+
+.wsp-section__section img {
+  max-width: 100%;
+}
+
+[class^="web_pack_-_fixed"] {
+  display: none;
+}
+
+.wsp-section__section h1,
+.wsp-section__section h2,
+.wsp-section__section h3,
+.wsp-section__section h4,
+.wsp-section__section h5,
+.wsp-section__section h6 {
+  color: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.wsp-section__rte,
+.wsp-section__rte p,
+.wsp-section__rte a,
+.wsp-section__rte a:hover,
+.wsp-section__rte a:visited,
+.wsp-section__rte a:focus {
+  color: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.wsp-section__rte a {
+  text-decoration: underline;
+}
+
+.wsp-section__rte p {
+  margin-bottom: 0.8em;
+}
+
+.wsp-section__rte p:last-of-type {
+  margin-bottom: 0;
+}
+
+.wsp-section__rte ul {
+  margin: 1em 0;
+  padding-left: 40px;
+}
+
+.wsp-section__rte li {
+  list-style: unset;
+}
+
+.wsp-section__absolute-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  z-index: 2;
+}
+
+.wsp-section__relative {
+  position: relative;
+}
+
+h1.wsp-section__heading,
+h2.wsp-section__heading,
+h3.wsp-section__heading,
+h4.wsp-section__heading,
+h5.wsp-section__heading,
+h6.wsp-section__heading {
+  margin-bottom: 1.2rem;
+}
+
+.wsp-section__text {
+  margin: 0;
+  color: inherit;
+}
+
+.wsp-section__button {
+  font-family: inherit;
+  cursor: pointer;
+  text-transform: unset;
+  -webkit-appearance: none;
+}
+
+.wsp-section__button::after {
+  display: none;
+}
+
+.wsp-section__section button,
+.wsp-section__section input[type="text"],
+.wsp-section__section input[type="email"] {
+  -webkit-appearance: none;
+}
+
+.wsp-section__sizer {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wsp-section__height-sizer {
+  display: table;
+}
+
+.wsp-section__height--x-small {
+  height: 125px;
+}
+
+.wsp-section__height--small {
+  height: 300px;
+}
+
+.wsp-section__height--medium {
+  height: 475px;
+}
+
+.wsp-section__height--large {
+  height: 650px;
+}
+
+.wsp-section__height--x-large {
+  height: 775px;
+}
+
+@media only screen and (max-width: 767px) {
+  .wsp-section__height--x-small {
+    height: 94px;
+  }
+
+  .wsp-section__height--small {
+    height: 225px;
+  }
+
+  .wsp-section__height--medium {
+    height: 357px;
+  }
+
+  .wsp-section__height--large {
+    height: 488px;
+  }
+
+  .wsp-section__height--x-large {
+    height: 582px;
+  }
+}
+
+/*** Videos ***/
+
+.wsp-section__video__wrapper video[loading=lazy],
+.wsp-section__background-video[loading=lazy] {
+  opacity: 1;
+}
+
+/*** Images ***/
+.wsp-section__image__wrapper {
+  display: grid;
+  position: relative;
+  margin: 0;
+}
+
+.wsp-section__image__wrapper svg {
+  display: block;
+}
+
+.wsp-section__image__wrapper:not(.wsp-section__image__wrapper--contain) svg {
+  width: inherit;
+  height: inherit;
+}
+
+.wsp-section__image__wrapper > * {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.wsp-section__image__wrapper img,
+.wsp-section__image__wrapper .wsp-section__placeholder {
+  object-fit: cover;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.wsp-section__image__wrapper--contain img {
+  object-fit: contain;
+}
+
+.web_pck__image-link {
+  display: block;
+  overflow: hidden;
+}
+
+/*** Widths ***/
+
+div.DP__widths {
+  display: inline-block !important;
+  vertical-align: top;
+  font-size: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.DP__widths * {
+  font-size: initial;
+}
+
+@media (max-width: 767px) {
+  div.DP__widths {
+    width: 100% !important;
+  }
+}
+
+/*** Flex ***/
+.wsp-section__flex {
+  display: flex;
+}
+
+.wsp-section__flex-wrap {
+  flex-wrap: wrap;
+}
+
+.wsp-section__flex--1-per-row .wsp-section__flex-item {
+  flex-basis: 100%;
+}
+
+.wsp-section__flex--2-per-row .wsp-section__flex-item {
+  flex-basis: 50%;
+}
+
+.wsp-section__flex--3-per-row .wsp-section__flex-item {
+  flex-basis: 33.3333%;
+}
+
+.wsp-section__flex--4-per-row .wsp-section__flex-item {
+  flex-basis: 25%;
+}
+
+.wsp-section__flex--5-per-row .wsp-section__flex-item {
+  flex-basis: 20%;
+}
+
+.wsp-section__flex--6-per-row .wsp-section__flex-item {
+  flex-basis: 16.6666%;
+}
+
+.wsp-section__flex--7-per-row .wsp-section__flex-item {
+  flex-basis: 14.3%;
+}
+
+.wsp-section__flex--8-per-row .wsp-section__flex-item {
+  flex-basis: 12.5%;
+}
+
+.wsp-section__flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.wsp-section__grid-row-reverse {
+  direction: rtl;
+}
+
+.wsp-section__grid-row-reverse * {
+  direction: ltr;
+}
+
+.wsp-section__justify-left {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.wsp-section__justify-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.wsp-section__justify-right {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.wsp-section__justify-justify {
+  justify-content: space-between;
+  text-align: justify;
+}
+
+.wsp-section__align-top {
+  align-items: flex-start;
+}
+
+.wsp-section__align-center {
+  align-items: center;
+}
+
+.wsp-section__align-bottom {
+  align-items: flex-end;
+}
+
+/** Text alignment **/
+
+.wsp-section__text-alignment-left {
+  text-align: left;
+}
+
+.wsp-section__text-alignment-center {
+  text-align: center;
+}
+
+.wsp-section__text-alignment-right {
+  text-align: right;
+}
+
+.wsp-section__text-alignment-justify {
+  text-align: justify;
+}
+
+/*** Grid ***/
+.wsp-section__grid {
+  display: grid;
+}
+
+.wsp-section__grid--1-per-row {
+  grid-template-columns: 1fr;
+}
+
+.wsp-section__grid--2-per-row {
+  grid-template-columns: 1fr 1fr;
+}
+
+.wsp-section__grid--3-per-row {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.wsp-section__grid--4-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.wsp-section__grid--5-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.wsp-section__grid--6-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.wsp-section__grid--7-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.wsp-section__grid--8-per-row {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.wsp-section__grid-reverse {
+  direction: rtl;
+}
+
+.wsp-section__grid-reverse * {
+  direction: ltr;
+}
+
+/*** Helpers ***/
+.wsp-section__unset {
+  font-family: unset;
+  font-size: unset;
+  letter-spacing: unset;
+  line-height: unset;
+  margin: unset;
+  padding: unset;
+  list-style: none;
+}
+
+.wsp-section__force-full-width {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.wsp-section__visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+.wsp-section__recaptcha-message {
+  margin-top: 0.8em;
+  font-size: 0.8em;
+}
+
+.wsp-section__recaptcha-message a,
+.wsp-section__recaptcha-message a:hover,
+.wsp-section__recaptcha-message a:focus {
+  font-style: italic;
+  color: inherit;
+  font-size: inherit;
+}
+
+/** Pages **/
+.wsp-section__page-intro {
+  width: 100%;
+}
+
+/** Theme editor warnings **/
+
+.wsp-section__no-app-warning {
+  position: relative;
+  overflow: hidden;
+  padding: 1em;
+}
+
+.wsp-section__no-app-warning-text {
+  position: relative;
+  background: #ff0;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 10px;
+  max-width: 50%;
+  margin: 0 auto;
+}
+
+.wsp-section__no-app-warning-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 130%;
+  background: repeating-linear-gradient(-45deg, #ff0, #ff0 20px, #000 20px, #000 40px);
+  animation: wsp-section__warning-background 1s linear infinite;
+}
+
+@keyframes wsp-section__warning-background {
+  to {
+    transform: translateX(-56px);
+  }
+}
+
+/** Animations **/
+
+[style*="--wsp-section-animate"] {
+  will-change: transform;
+  transform: translateZ(0);
+  opacity: 0;
+}
+
+.wsp-section__animation-applied {
+  overflow: hidden;
+}
+
+.wsp-section__animation-applied [style*="--wsp-section-animate"] {
+  --wsp-section-animation-multiplier: 0.3s;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  animation-delay: calc(var(--wsp-section-animation-multiplier) * var(--wsp-section-animate));
+}
+
+@keyframes wsp-section__animation--fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes wsp-section__animation--fade-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes wsp-section__animation--fade-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(-10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes wsp-section__animation--fade-in-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wsp-section__animation--fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/** Parallax **/
+.wsp-section__parallax {
+  position: relative;
+  z-index: 1;
+}
+
+.wsp-section__parallax > .wsp-section__parallax-img {
+  position: absolute;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/** Responsive helpers **/
+
+.wsp-section__desktop--visible {
+  display: inherit;
+}
+
+.wsp-section__desktop--hidden {
+  display: none !important;
+}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+  .wsp-section__tablet--visible {
+    display: block !important;
+  }
+
+  .wsp-section__tablet--hidden {
+    display: none !important;
+  }
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+  .wsp-section__mobile--visible {
+    display: block !important;
+  }
+
+  .wsp-section__mobile--hidden {
+    display: none !important;
+  }
+}
+
+/** Theme specific **/
+
+/* Dawn */
+[class*="wsp-section"]:empty {
+  display: inherit;
+}
+
+/* Debut - offset margin from the header */
+/* .main-content[id="MainContent"] .shopify-section[class*="DP__"]:first-child,
+.main-content[id="MainContent"] [id*="DP__"] {
+  margin-top: -35px;
+}
+
+@media only screen and (min-width: 750px) {
+  .main-content[id="MainContent"] .shopify-section[class*="DP__"]:first-child,
+  .main-content[id="MainContent"] .DP__widths.DP__width--half:first-child,
+  .main-content[id="MainContent"] .DP__widths.DP__width--half:first-child + .DP__widths.DP__width--half,
+  .main-content[id="MainContent"] [id*="DP__"] {
+    margin-top: -55px;
+  }
+} */
+
+/* Brooklyn - prevent default margins (but leave them on theme sections) */
+.index-sections [class*="DP__"] {
+  margin-top: 0;
+}
+
+.index-sections [class*="DP__"].shopify-section:first-child:not(.shopify-section--full-width) {
+  margin-top: 0;
+}
+
+/* Impulse - prevent default margins (but leave them on theme sections) */
+.main-content [class*="DP__"] {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Cornerstone - override overflow: hidden */
+[class*="DP__"].shopify-section {
+  overflow: unset;
+}
+
+  
+{%- if slider_block.size > 0 -%}
+  .flickity-enabled{position:relative}.flickity-enabled:focus{outline:0;box-shadow: none;}.flickity-viewport{overflow:hidden;position:relative;height:100%}.flickity-slider{position:absolute;width:100%;height:100%}.flickity-enabled.is-draggable{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.flickity-enabled.is-draggable .flickity-viewport{cursor:move;cursor:-webkit-grab;cursor:grab}.flickity-enabled.is-draggable .flickity-viewport.is-pointer-down{cursor:-webkit-grabbing;cursor:grabbing}.flickity-button{position:absolute;background:hsla(0,0%,100%,.75);border:none;color:#333}.flickity-button:hover{background:#fff;cursor:pointer}.flickity-button:focus{outline:0;box-shadow:0 0 0 5px #19f}.flickity-button:active{opacity:.6}.flickity-button:disabled{opacity:.3;cursor:auto;pointer-events:none}.flickity-button-icon{fill:currentColor}.flickity-prev-next-button{top:50%;width:44px;height:44px;border-radius:50%;transform:translateY(-50%)}.flickity-prev-next-button.previous{left:10px}.flickity-prev-next-button.next{right:10px}.flickity-rtl .flickity-prev-next-button.previous{left:auto;right:10px}.flickity-rtl .flickity-prev-next-button.next{right:auto;left:10px}.flickity-prev-next-button .flickity-button-icon{position:absolute;left:20%;top:20%;width:60%;height:60%}.flickity-page-dots{position:absolute;width:100%;bottom:-25px;padding:0;margin:0;list-style:none;text-align:center;line-height:1}.flickity-rtl .flickity-page-dots{direction:rtl}.flickity-page-dots .dot{display:inline-block;width:10px;height:10px;margin:0 8px;background:#333;border-radius:50%;opacity:.25;cursor:pointer}.flickity-page-dots .dot.is-selected{opacity:1}
+{%- endif -%}
+
+{%- if section.settings.override_theme_font != blank -%}
+  {%- for font in font_array -%}
+    {%- unless font contains 'error' -%}{{ font }}{%- endunless -%}
+  {%- endfor -%}
+  #DP--{{ section_id }} {
+    --main-font: {{ section.settings.main_font.family }}, {{ section.settings.main_font.fallback_families }};
+    --main-font-weight: {{ section.settings.main_font.weight }};
+    --main-font-style: {{ section.settings.main_font.style }};
+    --heading-font: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    --heading-font-weight: {{ section.settings.heading_font.weight }};
+    --heading-font-style: {{ section.settings.heading_font.style }};
+  }
+{%- endif -%}
+
+#DP--{{ section_id }} {
+  margin-top: {{ section.settings.outer_margin }}px;
+  margin-bottom: {{ section.settings.outer_margin }}px;
+}
+
+#DP--{{ section_id }} .wsp-section__sizer {
+  padding-top: {{ section.settings.inner_padding }}px;
+  padding-bottom: {{ section.settings.inner_padding }}px;
+  width: {{ section.settings.base_width }}%;
+  max-width: {{ max_width }};
+}
+
+#DP--{{ section_id }} .wsp-section__background {
+  background: {{ section.settings.background_color }};
+}
+
+#DP--{{ section_id }} .wsp-section__background-image {
+  position: absolute;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+#DP--{{ section_id }} .wsp-section__grid--main {
+  grid-template-columns: 1fr minmax(250px, {{ section.settings.text_width }}%);
+}
+
+#DP--{{ section_id }} .wsp-section__text p:last-of-type {
+  margin-bottom: 1.2rem;
+}
+
+{%- if section.settings.image_crop == 'match_text_box' -%}
+  #DP--{{ section_id }} .wsp-section__image__wrapper--main {
+    height: 100%;
+    overflow: hidden;
+  }
+{%- endif -%}
+
+{% comment %} COMPARISON SLIDER {% endcomment %}
+#DP--{{ section_id }} .wsp-section__compare {
+  position: relative;
+  aspect-ratio: {{ section.settings.left_image.width | default: 1200 }} / {{ section.settings.left_image.height | default: 800 }};
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__slider {
+  position: absolute;
+  z-index: 1;
+  width: 50px;
+  height: 50px;
+  cursor: grab;
+  display: block !important;
+  position: relative;
+  top: calc(50% - 25px);
+  left: calc(50% - 25px);
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__slider:active {
+  cursor: grabbing;
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__slider-handle {
+  background: {{ section.settings.handle_color }};
+  border: 4px solid {{ section.settings.border_color }};
+  border-radius: 50%;
+  transition: border-color 0.2s;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__slider-handle svg {
+  width: 50%;
+  height: 50%;
+  margin: auto;
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__slider-handle svg path {
+  fill: {{ section.settings.drag_color }};
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__slider img {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: -2px;
+  object-fit: cover;
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__image {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__overlay {
+  border-right: 2px solid {{ section.settings.border_color }};
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__overlay:after {
+  display: block;
+  content: '';
+  width: 2px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: {{ section.settings.border_color }};
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+}
+
+#DP--{{ section_id }} .wsp-section__comparison__overlay img {
+  height: 100%;
+  width: auto;
+}
+
+#DP--{{ section_id }} .wsp-section__caption {
+  position: absolute;
+  display: block;
+  color: {{ section.settings.caption_text }};
+  left: 0;
+  top: 0;
+  width: max-content;
+  max-width: 200px;
+  margin: 10px;
+  padding: 0.3em 0.8em;
+  background-color: {{ section.settings.caption_background }};
+  line-height: var(--dp-g-body-line-height, var(--dp-body-line-height, calc(3px + 2.5ex + 3px)));
+  font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.008 }});
+  {%- if section.settings.override_theme_font != blank -%}
+  font-family: var(--main-font);
+  font-weight: var(--main-font-weight);
+  font-style: var(--main-font-style);
+  {%- endif -%}
+}
+
+#DP--{{ section_id }} .wsp-section__caption--right {
+  right: 0;
+  left: auto;
+}
+
+{% comment %} END COMPARISON SLIDER {% endcomment %}
+
+#DP--{{ section_id }} .wsp-section__content {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  {%- if section.settings.override_theme_font != blank -%}
+  font-family: var(--main-font);
+  font-weight: var(--main-font-weight);
+  font-style: var(--main-font-style);
+  {%- endif -%}
+  background: {{ section.settings.text_background_color }};
+}
+
+#DP--{{ section_id }} .wsp-section__inner-content {
+  width: 100%;
+  max-width: min(600px, 80%);
+  margin: auto;
+}
+
+{% comment %} Block styling {% endcomment %}
+#DP--{{ section_id }} .wsp-section__block .wsp-section__small-heading {
+  font-size: calc(var(--dp-g-small-heading-size, var(--dp-small-heading-size, 24px)) * {{ section.settings.text_size | times: 0.01 }});
+  {%- if section.settings.override_theme_font != blank -%}
+    font-family: var(--heading-font);
+    font-weight: var(--heading-font-weight);
+    font-style: var(--heading-font-style);
+  {%- endif -%}
+}
+
+#DP--{{ section_id }} .wsp-section__rte p,
+#DP--{{ section_id }} .wsp-section__rte ul {
+  line-height: var(--dp-g-body-line-height, var(--dp-body-line-height, calc(3px + 2.5ex + 3px)));
+  color: {{ section.settings.text_color }};
+  font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+  {%- if section.settings.override_theme_font != blank -%}
+  font-family: var(--main-font);
+  font-weight: var(--main-font-weight);
+  font-style: var(--main-font-style);
+  {%- endif -%}
+}
+
+#DP--{{ section_id }} .wsp-section__small-text p,
+#DP--{{ section_id }} .wsp-section__small-text ul {
+  font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.008 }});
+}
+
+{%- if section.settings.text_alignment == 'center' -%}
+  #DP--{{ section_id }} .wsp-section__rte ul {
+    display: table;
+    margin: 0 auto;
+    text-align: left;
+  }
+{%- elsif section.settings.text_alignment == 'right' -%}
+  #DP--{{ section_id }} .wsp-section__rte ul {
+    display: table;
+    margin-left: auto;
+    text-align: left;
+  }
+{%- endif -%}
+
+#DP--{{ section_id }} .wsp-section__block {
+  color: {{ section.settings.text_color }};
+}
+
+#DP--{{ section_id }} .wsp-section__block + .wsp-section__block {
+  margin-top: 15px;
+}
+{% comment %} End block styling {% endcomment %}
+
+/* Animation */
+{%- if section.settings.animation != 'none' -%}
+  #DP--{{ section_id }}.wsp-section__animation-applied [style*="--wsp-section-animate"] {
+    animation-name: wsp-section__animation--{{ section.settings.animation }};
+  }
+{%- else -%}
+  #DP--{{ section_id }} [style*="--wsp-section-animate"] {
+    opacity: 1;
+  }
+{% endif %}
+
+{%- if section.settings.custom_css != blank -%}
+  {%- assign custom_section_declarations = section.settings.custom_css | split: '}' -%}
+  {%- for declaration in custom_section_declarations -%}
+    {%- if declaration contains '{' -%}
+      #DP--{{ section_id }} {{ declaration }} }
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+  #DP--{{ section_id }} .wsp-section__grid--main {
+    grid-template-columns: repeat(1, minmax(250px, 1fr));
+  }
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+  #DP--{{ section_id }} {
+    margin-top: {{ section.settings.outer_margin | times: 0.75 | round: 0 }}px;
+    margin-bottom: {{ section.settings.outer_margin | times: 0.75 | round: 0 }}px;
+  }
+
+  #DP--{{ section_id }} .wsp-section__sizer {
+    min-width: 70%;
+    padding-top: {{ section.settings.inner_padding | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.inner_padding | times: 0.75 | round: 0 }}px;
+  }
+
+  #DP--{{ section_id }} .wsp-section__inner-content {
+    max-width: min(400px, 100%);
+  }
+
+  {%- if section.settings.mobile_custom_css != blank -%}
+    {%- assign mobile_custom_declarations = section.settings.mobile_custom_css | split: '}' -%}
+    {%- for declaration in mobile_custom_declarations -%}
+      {%- if declaration contains '{' -%}
+        #DP--{{ section_id }} {{ declaration }} }
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+}
+</style>
+
+{%- comment -%} HTML {%- endcomment -%}
+<section id="DP--{{ section_id }}" class="DP--{{ section_id }} wsp-section__main wsp-section__section">
+  {%- if section.settings.anchor_id != blank -%}
+    <div id="{{ section.settings.anchor_id | remove: '#' | handleize }}" class="wsp-section__anchor-id" style="height: 0; overflow: hidden;"></div>
+  {%- endif -%}
+  <div class="wsp-section__background">
+    {%- if section.settings.show_background_image -%}
+      {%- if section.settings.background_image != blank -%}
+        {{ section.settings.background_image | image_url: width: section.settings.background_image.width | image_tag:  widths: widths, sizes: '100vw', class: 'wsp-section__background-image' }}
+      {%- else -%}
+        <img src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/{{ placeholder_image_id }}_1600x.jpg"
+            class="wsp-section__background-image"
+            alt=""
+            loading="lazy"
+            class="wsp-section__background-image"
+            width="1600"
+            height="1000">
+      {%- endif -%}
+    {%- endif -%}
+    <div class="wsp-section__sizer
+                wsp-section__grid
+                wsp-section__grid--main
+                {% if section.settings.image_position == 'right' -%}
+                  wsp-section__grid-reverse
+                {%- endif -%}">
+      <div class="wsp-section__comparison-wrapper">
+        <div class="wsp-section__compare">
+          <div class="wsp-section__comparison__image wsp-section__comparison__image--right wsp-section__caption--right">
+            {%- if section.settings.right_image -%}
+              {%- capture sizes -%}
+                {{ section.settings.base_width }}vw
+              {%- endcapture -%}
+              {{ section.settings.right_image | image_url: width: 5000 | image_tag:  widths: widths, sizes: sizes }}
+            {%- else -%}
+              <img src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/{{ placeholder_image_id }}_1200x.jpg"
+                alt=""
+                loading="lazy"
+                width="1200"
+                height="800">
+            {%- endif -%}
+            {%- if section.settings.right_caption != blank -%}
+              <span class="wsp-section__caption wsp-section__caption--right">{{ section.settings.right_caption }}</span>
+            {%- endif -%}
+          </div>
+          <div class="wsp-section__comparison__slider">
+            {%- if section.settings.handle_image -%}
+              {{ section.settings.handle_image | image_url: width: 800 | image_tag: loading: 'lazy' }}
+            {%- else -%}
+              <div class="wsp-section__comparison__slider-handle">
+                <svg viewBox="0 0 20 20" ><path d="M6 0a1 1 0 0 0-1 1v18a1 1 0 1 0 2 0v-18a1 1 0 0 0-1-1zm8 0a1 1 0 0 0-1 1v18a1 1 0 1 0 2 0v-18a1 1 0 0 0-1-1z"></path></svg>
+              </div>
+            {%- endif -%}
+          </div>
+          <div class="wsp-section__comparison__image wsp-section__comparison__overlay wsp-section__comparison__image--left">
+            {%- if section.settings.left_image -%}
+              {%- capture sizes -%}
+                {{ section.settings.base_width }}vw
+              {%- endcapture -%}
+              {{ section.settings.left_image | image_url: width: 5000 | image_tag:  widths: widths, sizes: sizes }}
+            {%- else -%}
+              <img src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/{{ placeholder_image_id_2 }}.jpg"
+                alt=""
+                loading="lazy"
+                width="1200"
+                height="800">
+            {%- endif -%}
+            {%- if section.settings.left_caption != blank -%}
+              <span class="wsp-section__caption wsp-section__caption--left">{{ section.settings.left_caption }}</span>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+      <!-- Blocks Loop -->
+      <div class="wsp-section__content wsp-section__flex wsp-section__justify-{{ section.settings.text_alignment }}" style="--wsp-section-animate: 1;">
+        <div class="wsp-section__inner-content">
+          {%- for block in section.blocks -%}
+            <div id="DP--{{ block.id }}" class="wsp-section__block wsp-section__block-id-{{ block.id }} wsp-section__block--{{ block.type }} wsp-section__block--{{ forloop.index }}" {{ block.shopify_attributes }} style="--wsp-section-animate: {{ forloop.index }};">
+              {%- case block.type -%}
+
+                {%- when 'slider_block' -%}
+                  <style>
+                    .wsp-section__block-id-{{ block.id }} {
+                      --show-arrows: {{ block.settings.show_arrows | json }};
+                      --autoplay: {{ block.settings.autoplay | times: 1000 | json }};
+                      --slider-animation: {%- if block.settings.slider_animation == 'fade' -%}true{%- else -%}false{%- endif -%};
+                      --page-dots: {{ block.settings.show_dots | json }};
+                      --draggable: true;
+                      --free-scroll-friction: {{ '0.075' | json }};
+                      --selected-attraction: {{ '0.025' | json }};
+                      --friction: {{ '0.28' | json }};
+                      --drag-threshold: {{ '3' | json }};
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__slider-container {
+                      display: flex;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__slider-block {
+                      width: {{ block.settings.image_width }}%;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__slide {
+                      width: 100%;
+                    }
+
+                    #DP--{{ section_id }} .wsp-section__block-id-{{ block.id }} .wsp-section__text {
+                      margin-top: 10px;
+                      text-align: center;
+                    }
+
+                    #DP--{{ section_id }} .wsp-section__block-id-{{ block.id }} .wsp-section__text p:last-of-type {
+                      margin-bottom: 0;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__slide img {
+                      width: 100%;
+                      height: auto;
+                      display: block;
+                      margin: auto;
+                    }
+
+                    {%- if block.settings.show_dots == true -%}
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__slider-container {
+                        margin-bottom: 30px;
+                      }
+
+                      .wsp-section__block-id-{{ block.id }} .flickity-page-dots {
+                        bottom: -25px;
+                      }
+
+                      .wsp-section__block-id-{{ block.id }} .flickity-page-dots li:only-child {
+                        display: none;
+                      }
+
+                    {%- endif -%}
+
+                    {%- if block.settings.show_arrows == true -%}
+                      .wsp-section__block-id-{{ block.id }} .flickity-prev-next-button {
+                        width: 30px;
+                        height: 30px;
+                      }
+                    {%- endif -%}
+
+                    @media (max-width: 480px) {
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__slider-block {
+                        width: {{ block.settings.mobile_image_width }}%;
+                      }
+                    }
+                  </style>
+                  <div class="wsp-section__slider-container wsp-section__justify-{{ section.settings.text_alignment }}">
+                    <div class="wsp-section__slider-block">
+                      {%- assign slider_count = 0 -%}
+                      {%- for index in (1..4) -%}
+                        {%- capture image -%}image_{{ forloop.index }}{%- endcapture -%}
+                        {%- capture text -%}text_{{ forloop.index }}{%- endcapture -%}
+                        {%- assign link = '' -%}
+                        {%- if block.settings[text] contains 'href' -%}
+                          {%- assign link_string = block.settings[text] | split: 'href="' | last -%}
+                          {%- assign link = link_string | split: '"' | first -%}
+                        {%- endif -%}
+                        {%- if block.settings[image] != blank or block.settings[text] != blank -%}
+                          {%- assign slider_count = slider_count | plus: 1 -%}
+                          <div class="wsp-section__slide">
+                            {%- if block.settings[link] != blank -%}
+                              <a href="{{ link }}">
+                            {%- endif -%}
+                              {%- capture sizes -%}
+                                (max-width: 480px) {{ block.settings.image_width }}, 50vw
+                              {%- endcapture -%}
+                              {%- if block.settings[image] != blank -%}
+                                {{ block.settings[image] | image_url: width: block.settings[image].width | image_tag:  widths: widths, sizes: sizes }}
+                              {%- endif -%}
+                              {%- if block.settings[text] != blank -%}
+                                <div class="wsp-section__text wsp-section__rte">
+                                  {{ block.settings[text] }}
+                                </div>
+                              {%- endif -%}
+                            {%- if link != blank -%}
+                              </a>
+                            {%- endif -%}
+                          </div>
+                        {%- endif -%}
+                      {%- endfor -%}
+                      {%- if slider_count == 0 -%}
+                        <style>
+                          .wsp-section__block-id-{{ block.id }} {
+                            display: none;
+                          }
+                        </style>
+                      {%- endif -%}
+                    </div>
+                  </div>
+
+                {% when 'feature_range' %}
+                  <style>
+                  .wsp-section__block-id-{{ block.id }} {
+                    --dot-color: {{ block.settings.dot_color }};
+                    --line-color: {{ block.settings.line_color }};
+                    --dot-size: {{ block.settings.dot_size }}px;
+                    --line-size: {{ block.settings.line_size }}px;
+                  }
+
+                  .wsp-section__block-id-{{ block.id }} .wsp-section__feature-range {
+                    display: grid;
+                    grid-template-columns: 1fr 4fr 1fr;
+                    gap: 12px;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 2rem 0;
+                  }
+
+                  .wsp-section__block-id-{{ block.id }} input[type=range] {
+                    width: 100%;
+                    appearance: none;
+                    background: var(--line-color);
+                    height: var(--line-size);
+                    min-height: unset;
+                    border: none;
+                  }
+
+                  .wsp-section__block-id-{{ block.id }} input[type=range]::-webkit-slider-thumb   {
+                    -webkit-appearance: none;
+                    height: var(--dot-size);
+                    width: var(--dot-size);
+                    border-radius: var(--dot-size);
+                    background: var(--dot-color);
+                  }
+
+                  .wsp-section__block-id-{{ block.id }} input[type=range]::-moz-range-thumb {
+                    -webkit-appearance: none;
+                    height: var(--dot-size);
+                    width: var(--dot-size);
+                    border-radius: var(--dot-size);
+                    background: var(--dot-color);
+                  }
+
+                  </style>
+                  <div class="wsp-section__feature-range-container wsp-section__justify-{{ section.settings.text_alignment }}">
+                    <div class="wsp-section__feature-range-title">
+                      <h3 class="wsp-section__small-heading">{{ block.settings.title }}</h3>
+                    </div>
+                    <div class="wsp-section__feature-range">
+                      <div class="wsp-section__text wsp-section__rte">
+                        <p>{{ block.settings.low_range_label }}</p>
+                      </div>
+                      <input type="range" aria-hidden="true" disabled="" id="Flavor" readonly="" min="0" max="10"  value="{{ block.settings.level }}">
+                      <div class="wsp-section__text wsp-section__rte">
+                        <p>{{ block.settings.high_range_label }}</p>
+                      </div>
+                    </div>
+                  </div>
+                {%- when 'collapsible_content' -%}
+                  {%- comment -%}Icons: SVG URI encoded icons{%- endcomment -%}
+                  {%- capture closed_icon -%}
+                    {%- case block.settings.icon_style -%}
+                      {%- when 'plus_minus' -%}
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z' fill='{{ section.settings.text_color | replace: "#", "%23" }}'/%3E%3C/svg%3E")
+                      {%- when 'caret' -%}
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M0 7.33l2.829-2.83 9.175 9.339 9.167-9.339 2.829 2.83-11.996 12.17z' fill='{{ section.settings.text_color | replace: "#", "%23" }}'/%3E%3C/svg%3E")
+                      {%- when 'plus_minus_square' -%}
+                        url("data:image/svg+xml,%3Csvg clip-rule='evenodd' fill-rule='evenodd' stroke-linejoin='round' stroke-miterlimit='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m21 3.998c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm6.75 6.752h-3.5c-.414 0-.75.336-.75.75s.336.75.75.75h3.5v3.5c0 .414.336.75.75.75s.75-.336.75-.75v-3.5h3.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-3.5v-3.5c0-.414-.336-.75-.75-.75s-.75.336-.75.75z' fill-rule='nonzero' fill='{{ section.settings.text_color | replace: "#", "%23" }}'/%3E%3C/svg%3E")
+                    {%- endcase -%}
+                  {%- endcapture -%}
+
+                  {%- capture open_icon -%}
+                    {%- case block.settings.icon_style -%}
+                      {%- when 'plus_minus' -%}
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M0 10h24v4h-24z' fill='{{ section.settings.text_color | replace: "#", "%23" }}'/%3E%3C/svg%3E")
+                      {%- when 'caret' -%}
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M0 16.67l2.829 2.83 9.175-9.339 9.167 9.339 2.829-2.83-11.996-12.17z' fill='{{ section.settings.text_color | replace: "#", "%23" }}'/%3E%3C/svg%3E")
+                      {%- when 'plus_minus_square' -%}
+                        url("data:image/svg+xml,%3Csvg clip-rule='evenodd' fill-rule='evenodd' stroke-linejoin='round' stroke-miterlimit='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m21 4c0-.478-.379-1-1-1h-16c-.62 0-1 .519-1 1v16c0 .621.52 1 1 1h16c.478 0 1-.379 1-1zm-16.5.5h15v15h-15zm11.75 6.752h-8.5c-.414 0-.75.336-.75.75s.336.75.75.75h8.5c.414 0 .75-.336.75-.75s-.336-.75-.75-.75z' fill-rule='nonzero' fill='{{ section.settings.text_color | replace: "#", "%23" }}'/%3E%3C/svg%3E");
+                    {%- endcase -%}
+                  {%- endcapture -%}
+                  <style>
+                    #DP--{{ section_id }} .wsp-section__block--collapsible_content + .wsp-section__block--collapsible_content {
+                      margin-top: 0;
+                    }
+
+                    #DP--{{ section_id }} .wsp-section__block--collapsible_content + .wsp-section__block--collapsible_content .wsp-section__accordion {
+                      border-top: 0;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__accordion {
+                      border-top: thin solid {{ section.settings.text_color }};
+                      border-bottom: thin solid {{ section.settings.text_color }};
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__question {
+                      position: relative;
+                      cursor: pointer;
+                      display: block;
+                      {%- if section.settings.text_alignment == 'left' -%}padding: 10px 25px 10px 0;{%- else -%}padding: 10px 25px 10px 25px;{%- endif -%}
+                      color: {{ section.settings.text_color }};
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__small-heading {
+                      margin: 0;
+                      font-size: calc(var(--dp-g-small-heading-size, var(--dp-small-heading-size, 24px)) * {{ section.settings.text_size | times: 0.008 }});
+                      {%- if section.settings.override_theme_font != blank -%}
+                        font-family: var(--heading-font);
+                        font-weight: var(--heading-font-weight);
+                        font-style: var(--heading-font-style);
+                      {%- endif -%}
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__question::-webkit-details-marker {
+                      display: none;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__accordion[open] > .wsp-section__question:after {
+                      background-image: {{ open_icon }};
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__question:after {
+                      content: '';
+                      position: absolute;
+                      top: 50%;
+                      transform: translateY(-50%);
+                      right: 0;
+                      height: 20px;
+                      width: 20px;
+                      background-image: {{ closed_icon }};
+                      background-size: contain;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__answer {
+                      padding-top: 10px;
+                      margin-bottom: 0;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__inner-answer {
+                      padding: 10px;
+                      padding-top: 0;
+                    }
+                  </style>
+                  <details class="wsp-section__accordion wsp-section__icon-style-{{ block.settings.icon_style }}" {%- if block.settings.show_open == true -%} open {%- endif -%}>
+                    <summary class="wsp-section__question">
+                      <h3 class="wsp-section__small-heading">{{ block.settings.title }}</h3>
+                    </summary>
+                    <div class="wsp-section__answer">
+                      <div class="wsp-section__inner-answer wsp-section__text wsp-section__rte">
+                        {{ block.settings.text }}
+                      </div>
+                    </div>
+                  </details>
+                {%- when 'fancy_heading' -%}
+                    <style>
+                      {%- if block.settings.highlight_enable_custom_font != blank -%}
+                        {{ block.settings.highlight_custom_font | font_face: font_display: 'swap' }}
+                        {{ block.settings.highlight_custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+                        {{ block.settings.highlight_custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+                        {{ block.settings.highlight_custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+                        .wsp-section__block-id-{{ block.id }} {
+                          --highlight-custom-font: {{ block.settings.highlight_custom_font.family }}, {{ block.settings.highlight_custom_font.fallback_families }};
+                          --highlight-custom-font-weight: {{ block.settings.highlight_custom_font.weight }};
+                          --highlight-custom-font-style: {{ block.settings.highlight_custom_font.style }};
+                        }
+                      {% endif %}
+
+                      {%- assign highlight_background_text_color_alpha = block.settings.highlight_background_color | color_extract: 'alpha' -%}
+                      {%- assign highlight_text_color_alpha = block.settings.highlight_text_color | color_extract: 'alpha' -%}
+                      {%- assign block_heading_alpha = block.settings.block_heading_color | color_extract: 'alpha' -%}
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__heading {
+                        margin: 0;
+                        line-height: var(--dp-g-heading-line-height, var(--dp-heading-line-height, calc(3px + 2ex + 3px)));
+                        {%- if block_heading_alpha != 0 -%}
+                          color: {{ block.settings.block_heading_color }};
+                        {%- endif -%}
+                        {%- if block.settings.block_heading_size != blank -%}
+                          font-size: calc({{ block.settings.block_heading_size }} * {{ section.settings.text_size | times: 0.01 }});
+                        {%- else -%}
+                          font-size: calc(var(--dp-g-heading-size, var(--dp-heading-size, 35px)) * {{ section.settings.text_size | times: 0.01 }});
+                        {%- endif -%}
+                        {%- if section.settings.override_theme_font != blank -%}
+                        font-family: var(--heading-font);
+                        font-weight: var(--heading-font-weight);
+                        font-style: var(--heading-font-style);
+                        {%- endif -%}
+                      }
+
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__fancy {
+                        position: relative;
+                        {%- if block.settings.highlight_heading_size != blank -%}
+                          font-size: calc({{ block.settings.highlight_heading_size }} * {{ section.settings.text_size | times: 0.01 }});
+                        {%- else -%}
+                          font-size: calc(var(--dp-g-heading-size, var(--dp-heading-size, 35px)) * {{ section.settings.text_size | times: 0.01 }});
+                        {%- endif -%}
+                        {%- if block.settings.highlight_enable_custom_font -%}
+                        font-family: var(--highlight-custom-font);
+                        font-weight: var(--highlight-custom-font-weight);
+                        font-style: var(--highlight-custom-font-style);
+                        {%- elsif section.settings.override_theme_font != blank -%}
+                        font-family: var(--heading-font);
+                        font-weight: var(--heading-font-weight);
+                        font-style: var(--heading-font-style);
+                        {%- endif -%}
+                        background-color: {%- if highlight_background_text_color_alpha != 0 -%}
+                          {{ block.settings.highlight_background_color }}
+                        {%- endif -%};
+                        color: {%- if highlight_text_color_alpha != 0 -%}
+                          {{ block.settings.highlight_text_color }}
+                        {%- endif -%};
+                      }
+
+                      {%- if block.settings.custom_css != blank -%}
+                        {%- assign custom_block_declarations = block.settings.custom_css | split: '}' -%}
+                        {%- for declaration in custom_block_declarations -%}
+                          {%- if declaration contains '{' -%}
+                            .wsp-section__block-id-{{ block.id }} {{ declaration }} }
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- endif -%}
+
+                      @media (max-width: 480px) {
+                        .wsp-section__block-id-{{ block.id }} .wsp-section__heading {
+                          {%- if block.settings.block_heading_size != blank -%}
+                            font-size: min({{ block.settings.block_heading_size }}, 50px);
+                          {%- endif -%}
+                        }
+                      }
+
+                    </style>
+                    {%- if block.settings.title != blank -%}
+                      <{{- block.settings.heading_level }} class="wsp-section__heading">
+                        {{ block.settings.title | replace: '[', '<span class="wsp-section__fancy">' | replace: ']', '</span>' }}
+                      </{{- block.settings.heading_level -}}>
+                    {%- endif -%}
+
+                {%- when 'video' -%}
+                  <style>
+                    .wsp-section__block-id-{{ block.id }} video {
+                      width: 100%    !important;
+                      height: auto   !important;
+                    }
+                  </style>
+                  <div class="wsp-section__video__wrapper">
+                    {%- assign video = block.settings.video -%}
+                    <video width="{{ video.aspect_ratio | times: 100 }}" height="100"
+                      {% if block.settings.autoplay %}autoplay muted{% endif %} playsinline
+                      {% if block.settings.loop %}loop{% endif %}
+                      {% if block.settings.show_controls %}controls controlsList="nodownload"{% endif %}
+                      loading="lazy" poster="{{ video.preview_image | image_url: width: 2800 }}">
+                      {%- for source in video.sources -%}
+                        {%- if source.format == 'mp4' or source.format == 'mov' -%}<source src="{{ source.url }}">{%- endif -%}
+                      {%- endfor -%}
+                    </video>
+                  </div>
+                {%- when 'newsletter' -%}
+                  <style>
+                    {%- assign button_alpha = block.settings.button_background_color | color_extract: 'alpha' -%}
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__form {
+                      --form-gap: 5px;
+                      width: 100%;
+                      display: flex;
+                      flex-wrap: wrap;
+                      gap: calc(var(--form-gap) * 2);
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__form-text {
+                      color: inherit;
+                      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__form input {
+                      margin: unset;
+                      padding: 0.8em;
+                      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__form input[type="text"],
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__form input[type="email"] {
+                      padding: 0.8em;
+                      background: transparent;
+                      border: thin solid {{ section.settings.text_color }};
+                      color: {{ section.settings.text_color }};
+                      {%- if section.settings.override_theme_font != blank -%}
+                      font-family: var(--main-font);
+                      font-weight: var(--main-font-weight);
+                      font-style: var(--main-font-style);
+                      {%- endif -%}
+                    }
+
+                    .wsp-section__form--{{ block.id }} input {
+                      width: 100%;
+                    }
+
+                    {%- if block.settings.show_first_name and block.settings.show_last_name -%}
+                      .wsp-section__form--{{ block.id }}-compact .wsp-section__newsletter_first-name,
+                      .wsp-section__form--{{ block.id }}-compact .wsp-section__newsletter_last-name {
+                        width: calc(50% - var(--form-gap));
+                      }
+                    {%- endif -%}
+
+                    .wsp-section__form--{{ block.id }}-compact .wsp-section__newsletter_email {
+                      width: calc(70% - var(--form-gap));
+                    }
+
+                    .wsp-section__form--{{ block.id }}-compact .wsp-section__button {
+                      width: calc(30% - var(--form-gap));
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} input::placeholder {
+                      opacity: 0.6;
+                      color: {{ section.settings.text_color }};
+                      {%- if section.settings.override_theme_font != blank -%}
+                      font-family: var(--main-font);
+                      font-weight: var(--main-font-weight);
+                      font-style: var(--main-font-style);
+                      {%- endif -%}
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__button {
+                      justify-content: center;
+                      text-align: center;
+                      transition: all 0.3s ease-in-out;
+                      border: thin solid;
+                      border-radius: {{ block.settings.button_radius }}px;
+                      color: {{ block.settings.button_label_color }};
+                      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+                      border-color: {%- if button_alpha != 0 -%}{{ block.settings.button_background_color }}{%- else -%}{{ block.settings.button_label_color }}{%- endif -%};
+                      background-color: {{ block.settings.button_background_color }};
+                      {%- if section.settings.override_theme_font != blank -%}
+                      font-family: var(--main-font);
+                      font-weight: var(--main-font-weight);
+                      font-style: var(--main-font-style);
+                      {%- endif -%}
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__button:hover {
+                      opacity: 1;
+                      {%- if button_alpha != 0 -%}
+                      background-color: {{ block.settings.button_background_color | color_darken: 10 }};
+                      border-color: transparent;
+                      {%- else -%}
+                      background-color: {{ block.settings.button_label_color | color_modify: 'alpha', 0.1 }}
+                      {%- endif -%};
+                    }
+                  </style>
+                  {%- capture form_id -%}wsp-section__form-{{ section_id }}{%- endcapture -%}
+                  {%- form 'customer', id: form_id -%}
+
+                    {%- comment -%} Error and success messages for submitted form {%- endcomment -%}
+                    <div class="wsp-section__form-response wsp-section__text">
+                      {%- if form.posted_successfully? -%}
+                        <p class="wsp-section__form-reply--success">{{ 'success' | t }}</p>
+                      {%- elsif form.errors -%}
+                        {%- for field in form.errors -%}
+                          <p class="wsp-section__form-reply--error">{{ field }} - {{ form.errors.messages[field] }}</p>
+                        {%- endfor -%}
+                      {%- endif -%}
+                    </div>
+
+                    {%- comment -%} Hidden newsletter fields {%- endcomment -%}
+                    <input type="hidden" name="contact[tags]" value="newsletter"/>
+                    <input type="hidden" name="challenge" value="false" />
+
+                    <div class="wsp-section__form wsp-section__form--{{ block.id }} wsp-section__form--{{ block.id }}-{{ block.settings.layout }}">
+                      {%- if block.settings.show_first_name -%}
+                        <label class="wsp-section__visually-hidden" for="first-name-{{ block.id }}">{{ block.settings.first_name_label }}</label>
+                        <input class="wsp-section__newsletter_first-name" type="text" name="contact[first_name]" id="first-name-{{ block.id }}" placeholder="{{ block.settings.first_name_label }}" />
+                      {%- endif -%}
+                      {%- if block.settings.show_last_name -%}
+                        <label class="wsp-section__visually-hidden" for="last-name-{{ block.id }}">{{ block.settings.last_name_label }}</label>
+                        <input class="wsp-section__newsletter_last-name" type="text" name="contact[last_name]" id="last-name-{{ block.id }}" placeholder="{{ block.settings.last_name_label }}" />
+                      {%- endif -%}
+                      <label class="wsp-section__visually-hidden" for="email-{{ block.id }}">{{ block.settings.email_label }}</label>
+                      <input class="wsp-section__newsletter_email" type="email" name="contact[email]" required id="email-{{ block.id }}" placeholder="{{ block.settings.email_label }}" />
+                      <input class="wsp-section__button" type="submit" value="{{ block.settings.submit_label }}" />
+                    </div>
+
+                  {%- endform -%}
+                {%- when 'list' -%}
+                  <style>
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__list {
+                      margin: 0;
+                      {%- case block.settings.list_style -%}
+                        {%- when 'decimal' -%}
+                          list-style: decimal;
+                        {%- when 'square' -%}
+                          list-style: square;
+                        {%- when 'circle' -%}
+                          list-style: circle;
+                        {%- else -%}
+                          list-style: inherit;
+                      {%- endcase -%}
+                    }
+                  </style>
+                  {%- assign list = block.settings.text | split: '**' -%}
+                  <div class="wsp-section__list-wrapper wsp-section__text wsp-section__rte">
+                    <ul class="wsp-section__list wsp-section__text-alignment-left">
+                      {%- for list_item in list -%}
+                        {%- if forloop.first == false -%}
+                          <li>{{ list_item }}</li>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                {%- when 'icons' -%}
+                  <style>
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__icons {
+                      --flex-gap: {{ block.settings.gap }}px;
+                      gap: var(--flex-gap);
+                      flex-wrap: wrap;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__icon {
+                      --flex-items: {{ 100.00 | divided_by: block.settings.icon_width }};
+                      text-align: center;
+                      flex: 0 1 calc((100% / var(--flex-items)) - (((var(--flex-items) - 1) / var(--flex-items)) * var(--flex-gap)));
+                      width: calc((100% / var(--flex-items)) - (((var(--flex-items) - 1) / var(--flex-items)) * var(--flex-gap)));
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__image__wrapper {
+                      position: relative;
+                      width: {{ block.settings.image_size }}%;
+                      height: auto;
+                      display: inline-block;
+                      font-size: 0;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} svg.wsp-section__svg-sizer {
+                      width: 100%;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__small-heading + .wsp-section__icon-text {
+                      margin-top: 5px;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__icon a,
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__icon p {
+                      color: {{ section.settings.text_color }};
+                      line-height: 1.2;
+                      margin: 0;
+                      text-decoration: none;
+                    }
+
+                    {%- if block.settings.icon_layout == 'left' -%}
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__icon {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 15px;
+                      }
+
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__image__wrapper {
+                        flex: 0 0 {{block.settings.image_size }}%;
+                        max-width: {{block.settings.image_size }}%;
+                      }
+
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__icon-content {
+                        flex: 1 1 auto;
+                        text-align: left;
+                      }
+
+                    {%- elsif block.settings.icon_layout == 'top' -%}
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__icon {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 5px;
+                      }
+
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__icon-content {
+                        text-align: center;
+                      }
+
+                    {%- endif -%}
+
+
+                    @media (max-width: 767px) {
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__icon {
+                        --flex-items: {{ 100.00 | divided_by: block.settings.mobile_icon_width }};
+                      }
+
+                      {%- if block.settings.mobile_icon_layout == 'left' -%}
+                        .wsp-section__block-id-{{ block.id }} .wsp-section__icon {
+                          display: flex;
+                          flex-direction: row;
+                          align-items: center;
+                          gap: 15px;
+                        }
+
+                        .wsp-section__block-id-{{ block.id }} .wsp-section__image__wrapper {
+                          flex: 0 0 {{block.settings.image_size }}%;
+                          max-width: {{block.settings.image_size }}%;
+                        }
+
+                        .wsp-section__block-id-{{ block.id }} .wsp-section__icon-content {
+                          flex: 1 1 auto;
+                          text-align: left;
+                        }
+
+                      {%- elsif block.settings.mobile_icon_layout == 'top' -%}
+                        .wsp-section__block-id-{{ block.id }} .wsp-section__icon {
+                          display: flex;
+                          flex-direction: column;
+                          align-items: center;
+                          gap: 5px;
+                        }
+
+                        .wsp-section__block-id-{{ block.id }} .wsp-section__icon-content {
+                          text-align: center;
+                        }
+
+                      {%- endif -%}
+                    }
+                  </style>
+                  <div class="wsp-section__flex wsp-section__icons {% if block.settings.icon_alignment == 'default' %}wsp-section__justify-{{ section.settings.text_alignment }}{% else %}wsp-section__justify-{{ block.settings.icon_alignment }}{% endif %}">
+                    {%- for index in (1..6) -%}
+                      {%- capture icon -%}icon_{{ forloop.index }}{%- endcapture -%}
+                      {%- capture heading -%}heading_{{ forloop.index }}{%- endcapture -%}
+                      {%- capture text -%}text_{{ forloop.index }}{%- endcapture -%}
+                      {%- capture link -%}link_{{ forloop.index }}{%- endcapture -%}
+                      {%- if block.settings[icon] != blank -%}
+                        <div class="wsp-section__flex-item wsp-section__icon wsp-section__rte">
+                          <a {% if block.settings[link] != blank %}href="{{ block.settings[link] }}"{% endif %} class="wsp-section__image__wrapper">
+                            <svg class="wsp-section__svg-sizer" viewBox="0 0 {{ block.settings[icon].width }} {{ block.settings[icon].height }}"></svg>
+                            {%- capture sizes -%}
+                              (max-width: 480px) calc(100vw / {{ block.settings.icon_width }}), calc({{ section.settings.text_width | default: 50 }}vw / {{ block.settings.icon_width }})
+                            {%- endcapture -%}
+                            {{ block.settings[icon] | image_url: width: block.settings[icon].width | image_tag:  widths: widths, sizes: sizes }}
+                          </a>
+                          {%- if block.settings[heading] != blank or block.settings[text] != blank -%}
+                            <div class="wsp-section__icon-content">
+                              {%- if block.settings[heading] != blank -%}
+                                  <h4 class="wsp-section__icon-heading wsp-section__small-heading">
+                                    {%- if block.settings[link] != blank -%}
+                                      <a href="{{ block.settings[link] }}">
+                                    {%- endif -%}
+                                      {{ block.settings[heading] }}
+                                    {%- if block.settings[link] != blank -%}
+                                      </a>
+                                    {%- endif -%}
+                                  </h4>
+                              {%- endif -%}
+                              {%- if block.settings[text] != blank -%}
+                                <p class="wsp-section__icon-text wsp-section__rte">
+                                  {{ block.settings[text] }}
+                                </p>
+                              {%- endif -%}
+                            </div>
+                          {%- endif -%}
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                {%- when 'text_columns' -%}
+                  <style>
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__columns {
+                      gap: {{ block.settings.gap }}px;
+                    }
+                  </style>
+                  <div class="wsp-section__flex wsp-section__columns wsp-section__flex--2-per-row wsp-section__justify-{{ block.settings.text_alignment }}">
+                    {%- for index in (1..2) -%}
+                      {%- capture heading -%}heading_{{ forloop.index }}{%- endcapture -%}
+                      {%- capture column -%}column_{{ forloop.index }}{%- endcapture -%}
+                      <div class="wsp-section__flex-item">
+                        {%- if block.settings[heading] != blank -%}
+                          <h3 class="wsp-section__small-heading wsp-section__column-heading">{{ block.settings[heading] }}</h3>
+                        {%- endif -%}
+                        {%- if block.settings[column] != blank -%}
+                          <div class="wsp-section__text wsp-section__rte">
+                            {{ block.settings[column] }}
+                          </div>
+                        {%- endif -%}
+                    </div>
+                    {%- endfor -%}
+                  </div>
+                {%- when 'countdown_timer' -%}
+                  {%- comment -%} Schedule: timezone value {%- endcomment -%}
+                  {%- assign timezone = block.settings.timezone | split: '~' | first | strip -%}
+                  <style>
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock-wrap {
+                      max-width: 450px;
+                      flex: 1 0 auto;
+                      margin: 0 auto;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock {
+                      grid-template-columns: repeat(4, minmax(0, 1fr));
+                      text-transform: uppercase;
+                      font-weight: bold;
+                      letter-spacing: 1px;
+                      {%- if section.settings.override_theme_font != blank -%}
+                      font-family: var(--main-font);
+                      font-weight: var(--main-font-weight);
+                      font-style: var(--main-font-style);
+                      {%- endif -%}
+                      color: {{ section.settings.text_color }};
+                      border: thin solid {{ section.settings.text_color }};
+                      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+                    }
+
+
+
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__measurement {
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                      padding: 8px 20px;
+                      border-left: thin solid {{ section.settings.text_color }};
+                    }
+
+                    {% comment %} Style options  {% endcomment %}
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock.wsp-section__clock--style_1 {
+                      border: none;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock--style_1 .wsp-section__measurement {
+                      border-left: none;
+                    }
+
+                    /*---*/
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock.wsp-section__clock--style_2 {
+                      border: none;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock--style_2 .wsp-section__measurement {
+                      border-left: thin solid {{ section.settings.text_color }};
+                    }
+
+                    /*---*/
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock.wsp-section__clock--style_3 {
+                      border: none;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock--style_3 .wsp-section__measurement {
+                      border-left: none;
+                      padding: 8px 16px;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock--style_3 .wsp-section__measurement .wsp-section__number {
+                      border-bottom: thin solid {{ section.settings.text_color }};
+                      margin-bottom: 12px;
+                    }
+
+                    /*---*/
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock.wsp-section__clock--style_4 {
+                      border: thin solid {{ section.settings.text_color }};
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__clock--style_4 .wsp-section__measurement {
+                      border-left: thin solid {{ section.settings.text_color }};
+                    }
+
+
+                    {% comment %} end Style options {% endcomment %}
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__measurement:first-child {
+                      border-left: none;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__number {
+                      width: 100%;
+                      text-align: center;
+                      font-weight: bold;
+                      padding: 5px 0;
+                      font-size: 1.5em;
+                      min-height: 2em;
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__label {
+                      font-size: clamp(9px, 0.5em, 45px);
+                      width: max-content;
+                      padding: 0.5em 0.8em;
+                    }
+                  </style>
+                  <div class="wsp-section__clock-wrap"
+                    data-timer-start="{{ block.settings.start_month }} {{ block.settings.start_day }} {{ block.settings.start_year }} {{ block.settings.start_time }} {{ timezone }}"
+                    data-timer-end="{{ block.settings.end_month }} {{ block.settings.end_day }} {{ block.settings.end_year }} {{ block.settings.end_time }} {{ timezone }}">
+                      <div class="wsp-section__clock wsp-section__grid wsp-section__clock--{{ block.settings.style_option }}">
+                        <div class="wsp-section__measurement wsp-section__days">
+                          <span class="wsp-section__number">--</span>
+                          <span class="wsp-section__label">{{ 'days' | t }}</span>
+                        </div>
+                        <div class="wsp-section__measurement wsp-section__hours">
+                          <span class="wsp-section__number">--</span>
+                          <span class="wsp-section__label">{{ 'hours' | t }}</span>
+                        </div>
+                        <div class="wsp-section__measurement wsp-section__minutes">
+                          <span class="wsp-section__number">--</span>
+                          <span class="wsp-section__label">{{ 'minutes' | t }}</span>
+                        </div>
+                        <div class="wsp-section__measurement wsp-section__seconds">
+                          <span class="wsp-section__number">--</span>
+                          <span class="wsp-section__label wsp-section__seconds-text">{{ 'seconds' | t }}</span>
+                        </div>
+                      </div>
+                  </div>
+                {%- when 'small_text' -%}
+                  {%- if block.settings.small_text != blank -%}
+                    <div class="wsp-section__small-text wsp-section__rte">
+                      {{ block.settings.small_text }}
+                    </div>
+                  {%- endif -%}
+                {%- when 'heading' -%}
+                  <style>
+                    {%- if block.settings.enable_custom_font != blank -%}
+                      {{ block.settings.custom_font | font_face: font_display: 'swap' }}
+                      {{ block.settings.custom_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+                      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+                      {{ block.settings.custom_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}
+                      .wsp-section__block-id-{{ block.id }} {
+                        --custom-font: {{ block.settings.custom_font.family }}, {{ block.settings.custom_font.fallback_families }};
+                        --custom-font-weight: {{ block.settings.custom_font.weight }};
+                        --custom-font-style: {{ block.settings.custom_font.style }};
+                      }
+                    {% endif %}
+
+                    {%- assign block_heading_alpha = block.settings.block_heading_color | color_extract: 'alpha' -%}
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__heading {
+                      margin: 0;
+                      line-height: var(--dp-g-heading-line-height, var(--dp-heading-line-height, calc(3px + 2ex + 3px)));
+                      {%- if block_heading_alpha != 0 -%}
+                        color: {{ block.settings.block_heading_color }};
+                      {%- endif -%}
+                      {%- if block.settings.block_heading_size != blank -%}
+                        font-size: calc({{ block.settings.block_heading_size }} * {{ section.settings.text_size | times: 0.01 }});
+                      {%- else -%}
+                        font-size: calc(var(--dp-g-heading-size, var(--dp-heading-size, 35px)) * {{ section.settings.text_size | times: 0.01 }});
+                      {%- endif -%}
+                      {%- if block.settings.enable_custom_font != blank -%}
+                      font-family: var(--custom-font);
+                      font-weight: var(--custom-font-weight);
+                      font-style: var(--custom-font-style);
+                      {%- elsif section.settings.override_theme_font != blank -%}
+                      font-family: var(--heading-font);
+                      font-weight: var(--heading-font-weight);
+                      font-style: var(--heading-font-style);
+                      {%- endif -%}
+                    }
+
+                    @media (max-width: 480px) {
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__heading {
+                        {%- if block.settings.block_heading_size != blank -%}
+                          font-size: min({{ block.settings.block_heading_size }}, 50px);
+                        {%- endif -%}
+                      }
+                    }
+
+                  </style>
+                  {%- if block.settings.title != blank -%}
+                    <{{- block.settings.heading_level }} class="wsp-section__heading">
+                      {{ block.settings.title | newline_to_br }}
+                    </{{- block.settings.heading_level -}}>
+                  {%- endif -%}
+
+                {%- when 'text' -%}
+                  {%- if block.settings.text != blank -%}
+                    <div class="wsp-section__text wsp-section__rte">
+                      {{ block.settings.text }}
+                    </div>
+                  {%- endif -%}
+                {%- when 'buttons' -%}
+                  <style>
+                    {%- assign button_alpha_primary = block.settings.button_background_color_primary | color_extract: 'alpha' -%}
+                    {%- assign button_alpha_secondary = block.settings.button_background_color_secondary | color_extract: 'alpha' -%}
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__button-area {
+                      display: grid;
+                      grid-gap: 1.3em;
+                      {%- if section.settings.text_alignment == 'center' -%}
+                        margin: 0 auto;
+                      {%- elsif section.settings.text_alignment == 'right' -%}
+                        margin: 0 0 0 auto;
+                      {%- endif -%}
+                      {%- if block.settings.button_label_primary != blank and block.settings.button_label_secondary != blank -%}
+                        grid-template-columns: repeat(2, 1fr);
+                      {%- else -%}
+                        grid-template-columns: 1fr;
+                        max-width: 200px;
+                      {%- endif -%}
+                      max-width: 100%;
+                      width: fit-content;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__button {
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      text-align: center;
+                      text-decoration: none;
+                      padding: var(--dp-button-padding, 0.5em 1.2em);
+                      margin-top: 0;
+                      border: thin solid;
+                      transition: all 0.3s ease-in-out;
+                      border-radius: {{ block.settings.button_radius }}px;
+                      line-height: var(--dp-g-button-line-height, var(--dp-button-line-height, calc(3px + 2ex + 3px)));
+                      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.01 }});
+                      {%- if section.settings.override_theme_font != blank -%}
+                      font-family: var(--main-font);
+                      font-weight: var(--main-font-weight);
+                      font-style: var(--main-font-style);
+                      {%- endif -%}
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__button-primary {
+                      color: {{ block.settings.button_label_color_primary }};
+                      border-color: {%- if button_alpha_primary != 0 -%}{{ block.settings.button_background_color_primary }}{%- else -%}{{ block.settings.button_label_color_primary }}{%- endif -%};
+                      background-color: {{ block.settings.button_background_color_primary }};
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__button-secondary {
+                      color: {{ block.settings.button_label_color_secondary }};
+                      border-color: {%- if button_alpha_secondary != 0 -%}{{ block.settings.button_background_color_secondary }}{%- else -%}{{ block.settings.button_label_color_secondary }}{%- endif -%};
+                      background-color: {{ block.settings.button_background_color_secondary }};
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__button-primary:hover {
+                      opacity: 1;
+                      {%- if button_alpha_primary != 0 -%}
+                      background-color: {{ block.settings.button_background_color_primary | color_darken: 10 }};
+                      border-color: transparent;
+                      {%- else -%}
+                      background-color: {{ block.settings.button_label_color_primary | color_modify: 'alpha', 0.1 }}
+                      {%- endif -%};
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__button-secondary:hover {
+                      opacity: 1;
+                      {%- if button_alpha_secondary != 0 -%}
+                      background-color: {{ block.settings.button_background_color_secondary | color_darken: 10 }};
+                      border-color: transparent;
+                      {%- else -%}
+                      background-color: {{ block.settings.button_label_color_secondary | color_modify: 'alpha', 0.1 }}
+                      {%- endif -%};
+                    }
+
+                    @media (max-width: 480px) {
+                      .wsp-section__block-id-{{ block.id }} div.wsp-section__button-area {
+                        grid-template-columns: 1fr;
+                        width: 100%;
+                        gap: 10px;
+                      }
+                    }
+                  </style>
+                  <div class="wsp-section__button-area">
+                    {%- if block.settings.button_label_primary != blank -%}
+                      <a class="wsp-section__button wsp-section__button-primary" {%- if block.settings.link_primary != blank -%} href="{{ block.settings.link_primary }}" {%- endif -%} {% if block.settings.external_link_primary %}target="_blank"{% endif %}>{{ block.settings.button_label_primary }}</a>
+                    {%- endif -%}
+                    {%- if block.settings.button_label_secondary != blank -%}
+                      <a class="wsp-section__button wsp-section__button-secondary" {%- if block.settings.link_secondary != blank -%}href="{{ block.settings.link_secondary }}"{%- endif -%} {% if block.settings.external_link_secondary %}target="_blank"{% endif %}>{{ block.settings.button_label_secondary }}</a>
+                    {%- endif -%}
+                  </div>
+                {%- when 'inset_image' -%}
+                  <style>
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__image__wrapper {
+                      width: {{ block.settings.inset_image_size }}%;
+                      display: inline-block;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__image__wrapper svg {
+                      width: 100%;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__image__wrapper path {
+                      fill: {{ section.settings.text_color }};
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__item img {
+                      width: 100%;
+                      object-fit: contain;
+                    }
+                  </style>
+                  {%- capture placeholder_image -%}
+                    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M15.651 12.851c-2.13 1.94-5.17 2.91-9.07 2.91-.91 0-1.87-.04-2.88-.17-.38.86-.6 1.71-.6 2.51 0 .55-.45 1-1 1s-1-.45-1-1c0-.24.01-.48.04-.72.02-.13.03-.26.06-.39.18-1.13.64-2.27 1.29-3.39 2.32-4.02 9.3-8.68 12.61-9.5-4.76-.03-12 3-13.91 6.93 0-2.89 2.3-6.42 5.46-8.38 4.54-2.82 10.47-1.14 12.06 0 .23.16.37.42.38.7.08 2.31-.25 6.62-3.44 9.5z" fill="#5C5F62"/></svg>
+                  {%- endcapture -%}
+                  <div class="wsp-section__inset-image wsp-section__flex wsp-section__justify-{%- if block.settings.image_alignment != 'default' -%}{{ block.settings.image_alignment }}{%- else -%}{{ section.settings.text_alignment }}{%- endif -%}">
+                    {%- if block.settings.inset_image != blank -%}
+                      <div class="wsp-section__image__wrapper">
+                        <svg viewBox="0 0 {{ block.settings.inset_image.width }} {{ block.settings.inset_image.height }}"></svg>
+                        {%- capture sizes -%}
+                          (max-width: 480px) {{ block.settings.inset_image_size }}vw,(max-width: 767px) {{ block.settings.inset_image_size }}vw, {{ 0.5 | times: block.settings.inset_image_size | divided_by: 100.0 | times: 100.0 | round }}vw
+                        {%- endcapture -%}
+                        {{ block.settings.inset_image | image_url: width: 1000 | image_tag:  widths: widths, sizes: sizes }}
+                      </div>
+                    {%- else -%}
+                      <div class="wsp-section__image__wrapper">
+                        {{ placeholder_image | strip }}
+                      </div>
+                    {%- endif -%}
+                  </div>
+                {%- when 'divider' -%}
+                  <style>
+                    .wsp-section__block-id-{{ block.id }} {
+                      padding-top: {{ block.settings.padding_top }}px;
+                      padding-bottom: {{ block.settings.padding_bottom }}px;
+                    }
+
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__divider {
+                      height: 0;
+                      border: none;
+                      background: transparent;
+                      {%- if section.settings.text_alignment == 'left' -%}
+                        margin: 0;
+                      {%- elsif section.settings.text_alignment == 'right' -%}
+                        margin: 0 0 0 auto;
+                      {%- else -%}
+                        margin: 0 auto;
+                      {%- endif -%}
+                      width: {{ block.settings.base_width }}%;
+                      border-top: {{ block.settings.thickness }}px {{ block.settings.style }} {{ block.settings.divider_color }};
+                    }
+                  </style>
+                  <hr class="wsp-section__divider" aria-hidden="true">
+                {%- when 'liquid' -%}
+                  {{ block.settings.liquid }}
+                {%- when '@app' -%}
+                  {% render block %}
+                {%- when 'spacer' -%}
+                  <style>
+                    #shopify-section-{{ section_id }} #DP--{{ section_id }} .wsp-section__block-id-{{ block.id }},
+                    #shopify-section-{{ section_id }} #DP--{{ section_id }} .wsp-section__block-id-{{ block.id }} + .wsp-section__block {
+                      margin-top: 0;
+                    }
+                    .wsp-section__block-id-{{ block.id }} .wsp-section__spacer {
+                      height: {{ block.settings.size }}px;
+                      display: block !important;
+                    }
+                    @media (max-width: 480px) {
+                      .wsp-section__block-id-{{ block.id }} .wsp-section__spacer {
+                        height: {{ block.settings.size | times: 0.75 | round: 0 }}px;
+                      }
+                    }
+                  </style>
+                  <div class="wsp-section__spacer" aria-hidden="true"></div>
+              {%- endcase -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+      <!-- END Blocks Loop -->
+    </div>
+  </div>
+</section>
+{%- endcapture -%}
+{{ minify | strip_newlines }}
+
+{% schema %}
+{
+  "name": "Comparison slider text",
+  "class": "DP__comparison-slider-text",
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Heading",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Attention-grabbing headline"
+        },
+        {
+          "type": "color",
+          "id": "block_heading_color",
+          "label": "Heading color"
+        },
+        {
+          "type": "text",
+          "id": "block_heading_size",
+          "label": "Base text size",
+          "info": "Set custom base size for heading. Leave empty to default to base size of 35px. Base size is affected by section text size setting."
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_custom_font",
+          "label": "Enable custom font",
+          "default": false
+        },
+        {
+          "type": "font_picker",
+          "id": "custom_font",
+          "label": "Custom font",
+          "default": "abel_n4"
+        },
+        {
+          "type": "header",
+          "content": "Advanced"
+        },
+        {
+          "type": "select",
+          "id": "heading_level",
+          "label": "Heading level",
+          "options": [
+            {
+              "value": "h1",
+              "label": "h1"
+            },
+            {
+              "value": "h2",
+              "label": "h2"
+            },
+            {
+              "value": "h3",
+              "label": "h3"
+            },
+            {
+              "value": "h4",
+              "label": "h4"
+            },
+            {
+              "value": "h5",
+              "label": "h5"
+            },
+            {
+              "value": "h6",
+              "label": "h6"
+            }
+          ],
+          "default": "h2",
+          "info": "The most important heading has the rank 1 (<h1>) and the least important heading has rank 6 (<h6>). Only use one h1 on a page."
+        }
+      ]
+    },
+    {
+      "type": "fancy_heading",
+      "name": "Fancy heading",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "[Attention-grabbing] headline"
+        },
+        {
+          "type": "color",
+          "id": "block_heading_color",
+          "label": "Heading color"
+        },
+        {
+          "type": "text",
+          "id": "block_heading_size",
+          "label": "Base text size",
+          "info": "Leave empty to default to base size of 35px."
+        },
+        {
+          "type": "header",
+          "content": "Fancy text"
+        },
+        {
+          "type": "paragraph",
+          "content": "Use square brackets [] around text that you would like to target."
+        },
+        {
+          "type": "color",
+          "id": "highlight_text_color",
+          "label": "Text",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "highlight_background_color",
+          "label": "Background",
+          "default": "#000000"
+        },
+        {
+          "type": "text",
+          "id": "highlight_heading_size",
+          "label": "Base text size",
+          "placeholder": "eg. 40px",
+          "info": "Set custom size for text in square brackets."
+        },
+        {
+          "type": "checkbox",
+          "id": "highlight_enable_custom_font",
+          "label": "Enable custom font on selected text",
+          "default": false
+        },
+        {
+          "type": "font_picker",
+          "id": "highlight_custom_font",
+          "label": "Custom font",
+          "default": "abel_n4"
+        },
+        {
+          "type": "header",
+          "content": "Advanced"
+        },
+        {
+          "type": "select",
+          "id": "heading_level",
+          "label": "Heading level",
+          "options": [
+            {
+              "value": "h1",
+              "label": "h1"
+            },
+            {
+              "value": "h2",
+              "label": "h2"
+            },
+            {
+              "value": "h3",
+              "label": "h3"
+            },
+            {
+              "value": "h4",
+              "label": "h4"
+            },
+            {
+              "value": "h5",
+              "label": "h5"
+            },
+            {
+              "value": "h6",
+              "label": "h6"
+            }
+          ],
+          "default": "h2",
+          "info": "The most important heading has the rank 1 (<h1>) and the least important heading has rank 6 (<h6>). Only use one h1 on a page."
+        },
+        {
+          "type": "html",
+          "id": "custom_css",
+          "label": "CSS",
+          "info": "Target the text in the square brackets with the class .wsp-section__fancy"
+        }
+      ]
+    },
+    {
+      "type": "spacer",
+      "name": "Spacer",
+      "settings": [
+        {
+          "type": "range",
+          "id": "size",
+          "label": "Spacing height",
+          "min": 0,
+          "max": 100,
+          "default": 40,
+          "unit": "px"
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "name": "Divider",
+      "settings": [
+        {
+          "type": "range",
+          "id": "base_width",
+          "label": "Width",
+          "min": 20,
+          "max": 100,
+          "step": 5,
+          "default": 50,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "thickness",
+          "label": "Thickness",
+          "min": 0,
+          "max": 10,
+          "default": 1,
+          "unit": "px"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "default": "solid",
+          "options": [
+            {
+              "value": "solid",
+              "label": "Solid line"
+            },
+            {
+              "value": "dotted",
+              "label": "Dotted line"
+            },
+            {
+              "value": "dashed",
+              "label": "Dashed line"
+            },
+            {
+              "value": "double",
+              "label": "Double line"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Design"
+        },
+        {
+          "type": "color",
+          "id": "divider_color",
+          "label": "Color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "header",
+          "content": "Layout"
+        },
+        {
+          "type": "range",
+          "id": "padding_top",
+          "label": "Padding - top",
+          "min": 0,
+          "max": 100,
+          "default": 40,
+          "step": 5,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom",
+          "label": "Padding - bottom",
+          "min": 0,
+          "max": 100,
+          "default": 40,
+          "step": 5,
+          "unit": "px"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Regular text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Drag and drop block options like heading, text, buttons, dividers, and more.</p>"
+        }
+      ]
+    },
+    {
+      "type": "collapsible_content",
+      "name": "Collapsible content",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Shipping information"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Collapsed content",
+          "default": "<p>Lorem ipsum dolor.</p>"
+        },
+        {
+          "type": "select",
+          "id": "icon_style",
+          "label": "Icon style",
+          "options": [
+            {
+              "value": "plus_minus",
+              "label": "Plus and minus"
+            },
+            {
+              "value": "plus_minus_square",
+              "label": "Plus and minus buttons"
+            },
+            {
+              "value": "caret",
+              "label": "Carets"
+            }
+          ],
+          "default": "plus_minus_square"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_open",
+          "label": "Show open by default",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "small_text",
+      "name": "Small text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "small_text",
+          "label": "Small text",
+          "default": "<p>New arrivals</p>"
+        }
+      ]
+    },
+    {
+      "type": "list",
+      "name": "List",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "List items",
+          "default": "<p>** Important point number one</p><p>** Next point in the list</p>",
+          "info": "Use two asterisks (**) to create a new list item"
+        },
+        {
+          "type": "select",
+          "id": "list_style",
+          "label": "Style",
+          "options": [
+            {
+              "value": "decimal",
+              "label": "Numbered"
+            },
+            {
+              "value": "square",
+              "label": "Square"
+            },
+            {
+              "value": "circle",
+              "label": "Circle outline"
+            },
+            {
+              "value": "inherit",
+              "label": "Disc (default)"
+            }
+          ],
+          "default": "inherit"
+        }
+      ]
+    },
+    {
+      "type": "buttons",
+      "name": "Buttons",
+      "settings": [
+        {
+          "type": "range",
+          "id": "button_radius",
+          "label": "Button border radius",
+          "min": 0,
+          "max": 50,
+          "default": 0,
+          "unit": "px"
+        },
+        {
+          "type": "header",
+          "content": "Primary button"
+        },
+        {
+          "type": "text",
+          "id": "button_label_primary",
+          "label": "Primary button",
+          "default": "Learn more"
+        },
+        {
+          "type": "url",
+          "id": "link_primary",
+          "label": "Primary link"
+        },
+        {
+          "type": "checkbox",
+          "id": "external_link_primary",
+          "label": "Open primary link in a new window"
+        },
+        {
+          "type": "color",
+          "id": "button_label_color_primary",
+          "label": "Primary button label",
+          "default": "#121212"
+        },
+        {
+          "type": "color",
+          "id": "button_background_color_primary",
+          "label": "Primary button background",
+          "default": "rgba(0,0,0,0)"
+        },
+        {
+          "type": "header",
+          "content": "Secondary button"
+        },
+        {
+          "type": "text",
+          "id": "button_label_secondary",
+          "label": "Secondary button",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "link_secondary",
+          "label": "Secondary link"
+        },
+        {
+          "type": "checkbox",
+          "id": "external_link_secondary",
+          "label": "Open secondary link in a new window"
+        },
+        {
+          "type": "color",
+          "id": "button_label_color_secondary",
+          "label": "Secondary button label",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "button_background_color_secondary",
+          "label": "Secondary button background",
+          "default": "#121212"
+        }
+      ]
+    },
+    {
+      "type": "icons",
+      "name": "Icons",
+      "settings": [
+        {
+          "type": "range",
+          "id": "icon_width",
+          "label": "Icon width",
+          "default": 50,
+          "min": 10,
+          "max": 100,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "gap",
+          "min": 0,
+          "max": 40,
+          "label": "Spacing gap",
+          "unit": "px",
+          "default": 20
+        },
+        {
+          "type": "range",
+          "id": "image_size",
+          "min": 10,
+          "max": 100,
+          "label": "Image size",
+          "default": 40,
+          "unit": "%"
+        },
+        {
+          "type": "select",
+          "id": "icon_layout",
+          "label": "Icon layout",
+          "default": "top",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "left",
+              "label": "Left"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "icon_alignment",
+          "label": "Icon alignment",
+          "default": "default",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            },
+            {
+              "value": "default",
+              "label": "Default"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Mobile"
+        },
+        {
+          "type": "range",
+          "id": "mobile_icon_width",
+          "label": "Icon width",
+          "default": 50,
+          "min": 10,
+          "max": 100,
+          "unit": "%"
+        },
+        {
+          "type": "select",
+          "id": "mobile_icon_layout",
+          "label": "Icon layout",
+          "default": "top",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "left",
+              "label": "Left"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Icon 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_1",
+          "label": "Icon 1"
+        },
+        {
+          "type": "text",
+          "id": "heading_1",
+          "label": "Heading 1"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "text_1",
+          "label": "Text 1"
+        },
+        {
+          "type": "url",
+          "id": "link_1",
+          "label": "Link 1"
+        },
+        {
+          "type": "header",
+          "content": "Icon 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_2",
+          "label": "Icon 2"
+        },
+        {
+          "type": "text",
+          "id": "heading_2",
+          "label": "Heading 2"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "text_2",
+          "label": "Text 2"
+        },
+        {
+          "type": "url",
+          "id": "link_2",
+          "label": "Link 2"
+        },
+        {
+          "type": "header",
+          "content": "Icon 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_3",
+          "label": "Icon 3"
+        },
+        {
+          "type": "text",
+          "id": "heading_3",
+          "label": "Heading 3"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "text_3",
+          "label": "Text 3"
+        },
+        {
+          "type": "url",
+          "id": "link_3",
+          "label": "Link 3"
+        },
+        {
+          "type": "header",
+          "content": "Icon 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_4",
+          "label": "Icon 4"
+        },
+        {
+          "type": "text",
+          "id": "heading_4",
+          "label": "Heading 4"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "text_4",
+          "label": "Text 4"
+        },
+        {
+          "type": "url",
+          "id": "link_4",
+          "label": "Link 4"
+        },
+        {
+          "type": "header",
+          "content": "Icon 5"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_5",
+          "label": "Icon 5"
+        },
+        {
+          "type": "text",
+          "id": "heading_5",
+          "label": "Heading 5"
+        },
+        {
+        "type": "inline_richtext",
+        "id": "text_5",
+        "label": "Text 5"
+        },
+        {
+          "type": "url",
+          "id": "link_5",
+          "label": "Link 5"
+        },
+        {
+          "type": "header",
+          "content": "Icon 6"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_6",
+          "label": "Icon 6"
+        },
+        {
+          "type": "text",
+          "id": "heading_6",
+          "label": "Heading 6"
+        },
+        {
+        "type": "inline_richtext",
+        "id": "text_6",
+        "label": "Text 6"
+        },
+        {
+          "type": "url",
+          "id": "link_6",
+          "label": "Link 6"
+        }
+      ]
+    },
+    {
+      "type": "text_columns",
+      "name": "Text columns",
+      "settings": [
+        {
+          "type": "range",
+          "id": "gap",
+          "min": 0,
+          "max": 40,
+          "label": "Spacing gap",
+          "unit": "px",
+          "default": 10
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Text alignment",
+          "default": "center",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            },
+            {
+              "value": "justify",
+              "label": "Justify"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Column 1"
+        },
+        {
+          "type": "text",
+          "id": "heading_1",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "column_1",
+          "label": "Text",
+          "default": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris nibh enim, ornare at consequat sed, placerat quis libero. Curabitur id nulla ut nunc aliquam sodales.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Column 2"
+        },
+        {
+          "type": "text",
+          "id": "heading_2",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "column_2",
+          "label": "Text",
+          "default": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris nibh enim, ornare at consequat sed, placerat quis libero. Curabitur id nulla ut nunc aliquam sodales.</p>"
+        }
+      ]
+    },
+    {
+      "type": "inset_image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "inset_image",
+          "label": "Image"
+        },
+        {
+          "type": "range",
+          "id": "inset_image_size",
+          "label": "Image size",
+          "default": 10,
+          "min": 5,
+          "max": 100,
+          "step": 5,
+          "unit": "%"
+        },
+        {
+          "type": "select",
+          "id": "image_alignment",
+          "label": "Image alignment",
+          "default": "default",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            },
+            {
+              "value": "default",
+              "label": "Default"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter form",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+        },
+        {
+          "type": "select",
+          "id": "layout",
+          "label": "Layout",
+          "options": [
+            {
+              "value": "stacked",
+              "label": "Stacked"
+            },
+            {
+              "value": "compact",
+              "label": "Compact"
+            }
+          ],
+          "default": "compact"
+        },
+        {
+          "type": "text",
+          "id": "email_label",
+          "label": "Email label",
+          "default": "Email address"
+        },
+        {
+          "type": "text",
+          "id": "submit_label",
+          "label": "Submit label",
+          "default": "Submit"
+        },
+        {
+          "type": "header",
+          "content": "First name"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_first_name",
+          "label": "Show first name",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "first_name_label",
+          "label": "First name label",
+          "default": "First name"
+        },
+        {
+          "type": "header",
+          "content": "Last name"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_last_name",
+          "label": "Show last name",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "last_name_label",
+          "label": "Last name label",
+          "default": "Last name"
+        },
+        {
+          "type": "header",
+          "content": "Design"
+        },
+        {
+          "type": "color",
+          "id": "button_label_color",
+          "label": "Button label",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "button_background_color",
+          "label": "Button background",
+          "default": "#283144"
+        },
+        {
+          "type": "range",
+          "id": "button_radius",
+          "label": "Button border radius",
+          "min": 0,
+          "max": 50,
+          "default": 0,
+          "unit": "px"
+        }
+      ]
+    },
+    {
+      "type": "video",
+      "name": "Video",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video"
+        },
+        {
+          "type": "checkbox",
+          "id": "autoplay",
+          "label": "Autoplay",
+          "info": "Video will be muted.",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "loop",
+          "label": "Loop video",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "show_controls",
+          "label": "Show controls",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "feature_range",
+      "name": "Feature range",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Heading"
+        },
+        {
+          "type": "text",
+          "id": "low_range_label",
+          "label": "Low range label",
+          "default": "Mild"
+        },
+        {
+          "type": "text",
+          "id": "high_range_label",
+          "label": "High range label",
+          "default": "Spicy"
+        },
+        {
+          "type": "range",
+          "id": "level",
+          "label": "Level",
+          "default": 5,
+          "min": 0,
+          "max": 10,
+          "step": 0.1
+        },
+        {
+          "type": "header",
+          "content": "Design"
+        },
+        {
+          "type": "color",
+          "id": "line_color",
+          "label": "Line",
+          "default": "#283144"
+        },
+        {
+          "type": "color",
+          "id": "dot_color",
+          "label": "Dot",
+          "default": "#283144"
+        },
+        {
+          "type": "range",
+          "id": "line_size",
+          "label": "Line size",
+          "default": 1,
+          "min": 1,
+          "max": 8
+        },
+        {
+          "type": "range",
+          "id": "dot_size",
+          "label": "Dot size",
+          "default": 18,
+          "min": 10,
+          "max": 40
+        }
+      ]
+    },
+    {
+      "type": "countdown_timer",
+      "name": "Countdown timer",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "style_option",
+          "label": "Style option",
+          "default": "style_1",
+          "options": [
+            {
+              "value": "style_1",
+              "label": "Style 1"
+            },
+            {
+              "value": "style_2",
+              "label": "Style 2"
+            },
+            {
+              "value": "style_3",
+              "label": "Style 3"
+            },
+            {
+              "value": "style_4",
+              "label": "Style 4"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "timezone",
+          "label": "Timezone",
+          "default": "-05:00 ~ (GMT-05:00) Eastern Time (US & Canada)",
+          "options": [
+            {
+              "value": "-11:00 ~ (GMT-11:00) International Date Line West",
+              "label": "(GMT-11:00) International Date Line West"
+            },
+            {
+              "value": "-11:00 ~ (GMT-11:00) Midway Island",
+              "label": "(GMT-11:00) Midway Island"
+            },
+            {
+              "value": "-11:00 ~ (GMT-11:00) American Samoa",
+              "label": "(GMT-11:00) American Samoa"
+            },
+            {
+              "value": "-10:00 ~ (GMT-10:00) Hawaii",
+              "label": "(GMT-10:00) Hawaii"
+            },
+            {
+              "value": "-09:00 ~ (GMT-09:00) Alaska",
+              "label": "(GMT-09:00) Alaska"
+            },
+            {
+              "value": "-08:00 ~ (GMT-08:00) Pacific Time (US & Canada)",
+              "label": "(GMT-08:00) Pacific Time (US & Canada)"
+            },
+            {
+              "value": "-08:00 ~ (GMT-08:00) Tijuana",
+              "label": "(GMT-08:00) Tijuana"
+            },
+            {
+              "value": "-07:00 ~ (GMT-07:00) Mountain Time (US & Canada)",
+              "label": "(GMT-07:00) Mountain Time (US & Canada)"
+            },
+            {
+              "value": "-07:00 ~ (GMT-07:00) Arizona",
+              "label": "(GMT-07:00) Arizona"
+            },
+            {
+              "value": "-07:00 ~ (GMT-07:00) Chihuahua",
+              "label": "(GMT-07:00) Chihuahua"
+            },
+            {
+              "value": "-06:00 ~ (GMT-06:00) Central Time (US & Canada)",
+              "label": "(GMT-06:00) Central Time (US & Canada)"
+            },
+            {
+              "value": "-06:00 ~ (GMT-06:00) Saskatchewan",
+              "label": "(GMT-06:00) Saskatchewan"
+            },
+            {
+              "value": "-06:00 ~ (GMT-06:00) Monterrey",
+              "label": "(GMT-06:00) Monterrey"
+            },
+            {
+              "value": "-05:00 ~ (GMT-05:00) Eastern Time (US & Canada)",
+              "label": "(GMT-05:00) Eastern Time (US & Canada)"
+            },
+            {
+              "value": "-05:00 ~ (GMT-05:00) Indiana (East)",
+              "label": "(GMT-05:00) Indiana (East)"
+            },
+            {
+              "value": "-05:00 ~ (GMT-05:00) Bogota",
+              "label": "(GMT-05:00) Bogota"
+            },
+            {
+              "value": "-05:00 ~ (GMT-05:00) Lima",
+              "label": "(GMT-05:00) Lima"
+            },
+            {
+              "value": "-05:00 ~ (GMT-05:00) Quito",
+              "label": "(GMT-05:00) Quito"
+            },
+            {
+              "value": "-04:00 ~ (GMT-04:00) Atlantic Time (Canada)",
+              "label": "(GMT-04:00) Atlantic Time (Canada)"
+            },
+            {
+              "value": "-04:30 ~ (GMT-04:30) Caracas",
+              "label": "(GMT-04:30) Caracas"
+            },
+            {
+              "value": "-04:00 ~ (GMT-04:00) La Paz",
+              "label": "(GMT-04:00) La Paz"
+            },
+            {
+              "value": "-04:00 ~ (GMT-04:00) Santiago",
+              "label": "(GMT-04:00) Santiago"
+            },
+            {
+              "value": "-03:30 ~ (GMT-03:30) Newfoundland",
+              "label": "(GMT-03:30) Newfoundland"
+            },
+            {
+              "value": "-03:00 ~ (GMT-03:00) Brasilia",
+              "label": "(GMT-03:00) Brasilia"
+            },
+            {
+              "value": "-03:00 ~ (GMT-03:00) Buenos Aires",
+              "label": "(GMT-03:00) Buenos Aires"
+            },
+            {
+              "value": "-04:00 ~ (GMT-04:00) Georgetown",
+              "label": "(GMT-04:00) Georgetown"
+            },
+            {
+              "value": "-03:00 ~ (GMT-03:00) Greenland",
+              "label": "(GMT-03:00) Greenland"
+            },
+            {
+              "value": "-01:00 ~ (GMT-01:00) Azores",
+              "label": "(GMT-01:00) Azores"
+            },
+            {
+              "value": "-01:00 ~ (GMT-01:00) Cape Verde Is.",
+              "label": "(GMT-01:00) Cape Verde Is."
+            },
+            {
+              "value": "+00:00 ~ (GMT+00:00) Dublin",
+              "label": "(GMT+00:00) Dublin"
+            },
+            {
+              "value": "+00:00 ~ (GMT+00:00) Edinburgh",
+              "label": "(GMT+00:00) Edinburgh"
+            },
+            {
+              "value": "+00:00 ~ (GMT+00:00) Lisbon",
+              "label": "(GMT+00:00) Lisbon"
+            },
+            {
+              "value": "+00:00 ~ (GMT+00:00) Casablanca",
+              "label": "(GMT+00:00) Casablanca"
+            },
+            {
+              "value": "+00:00 ~ (GMT+00:00) Monrovia",
+              "label": "(GMT+00:00) Monrovia"
+            },
+            {
+              "value": "+00:00 ~ (GMT+00:00) UTC",
+              "label": "(GMT+00:00) UTC"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Belgrade",
+              "label": "(GMT+01:00) Belgrade"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Bratislava",
+              "label": "(GMT+01:00) Bratislava"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Budapest",
+              "label": "(GMT+01:00) Budapest"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Ljubljana",
+              "label": "(GMT+01:00) Ljubljana"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Prague",
+              "label": "(GMT+01:00) Prague"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Sarajevo",
+              "label": "(GMT+01:00) Sarajevo"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Skopje",
+              "label": "(GMT+01:00) Skopje"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Warsaw",
+              "label": "(GMT+01:00) Warsaw"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Zagreb",
+              "label": "(GMT+01:00) Zagreb"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Brussels",
+              "label": "(GMT+01:00) Brussels"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Copenhagen",
+              "label": "(GMT+01:00) Copenhagen"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Madrid",
+              "label": "(GMT+01:00) Madrid"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Paris",
+              "label": "(GMT+01:00) Paris"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Amsterdam",
+              "label": "(GMT+01:00) Amsterdam"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Berlin",
+              "label": "(GMT+01:00) Berlin"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Bern",
+              "label": "(GMT+01:00) Bern"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Rome",
+              "label": "(GMT+01:00) Rome"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Stockholm",
+              "label": "(GMT+01:00) Stockholm"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) Vienna",
+              "label": "(GMT+01:00) Vienna"
+            },
+            {
+              "value": "+01:00 ~ (GMT+01:00) West Central Africa",
+              "label": "(GMT+01:00) West Central Africa"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Bucharest",
+              "label": "(GMT+02:00) Bucharest"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Cairo",
+              "label": "(GMT+02:00) Cairo"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Helsinki",
+              "label": "(GMT+02:00) Helsinki"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Kyiv",
+              "label": "(GMT+02:00) Kyiv"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Riga",
+              "label": "(GMT+02:00) Riga"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Sofia",
+              "label": "(GMT+02:00) Sofia"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Tallinn",
+              "label": "(GMT+02:00) Tallinn"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Vilnius",
+              "label": "(GMT+02:00) Vilnius"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Athens",
+              "label": "(GMT+02:00) Athens"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Istanbul",
+              "label": "(GMT+02:00) Istanbul"
+            },
+            {
+              "value": "+03:00 ~ (GMT+03:00) Minsk",
+              "label": "(GMT+03:00) Minsk"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Jerusalem",
+              "label": "(GMT+02:00) Jerusalem"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Harare",
+              "label": "(GMT+02:00) Harare"
+            },
+            {
+              "value": "+02:00 ~ (GMT+02:00) Pretoria",
+              "label": "(GMT+02:00) Pretoria"
+            },
+            {
+              "value": "+04:00 ~ (GMT+04:00) Moscow",
+              "label": "(GMT+04:00) Moscow"
+            },
+            {
+              "value": "+04:00 ~ (GMT+04:00) Volgograd",
+              "label": "(GMT+04:00) Volgograd"
+            },
+            {
+              "value": "+03:00 ~ (GMT+03:00) Kuwait",
+              "label": "(GMT+03:00) Kuwait"
+            },
+            {
+              "value": "+03:00 ~ (GMT+03:00) Riyadh",
+              "label": "(GMT+03:00) Riyadh"
+            },
+            {
+              "value": "+03:00 ~ (GMT+03:00) Nairobi",
+              "label": "(GMT+03:00) Nairobi"
+            },
+            {
+              "value": "+03:00 ~ (GMT+03:00) Baghdad",
+              "label": "(GMT+03:00) Baghdad"
+            },
+            {
+              "value": "+03:30 ~ (GMT+03:30) Tehran",
+              "label": "(GMT+03:30) Tehran"
+            },
+            {
+              "value": "+04:00 ~ (GMT+04:00) Abu Dhabi",
+              "label": "(GMT+04:00) Abu Dhabi"
+            },
+            {
+              "value": "+04:00 ~ (GMT+04:00) Muscat",
+              "label": "(GMT+04:00) Muscat"
+            },
+            {
+              "value": "+04:00 ~ (GMT+04:00) Baku",
+              "label": "(GMT+04:00) Baku"
+            },
+            {
+              "value": "+04:00 ~ (GMT+04:00) Tbilisi",
+              "label": "(GMT+04:00) Tbilisi"
+            },
+            {
+              "value": "+04:00 ~ (GMT+04:00) Yerevan",
+              "label": "(GMT+04:00) Yerevan"
+            },
+            {
+              "value": "+04:30 ~ (GMT+04:30) Kabul",
+              "label": "(GMT+04:30) Kabul"
+            },
+            {
+              "value": "+06:00 ~ (GMT+06:00) Ekaterinburg",
+              "label": "(GMT+06:00) Ekaterinburg"
+            },
+            {
+              "value": "+05:00 ~ (GMT+05:00) Islamabad",
+              "label": "(GMT+05:00) Islamabad"
+            },
+            {
+              "value": "+05:00 ~ (GMT+05:00) Karachi",
+              "label": "(GMT+05:00) Karachi"
+            },
+            {
+              "value": "+05:00 ~ (GMT+05:00) Tashkent",
+              "label": "(GMT+05:00) Tashkent"
+            },
+            {
+              "value": "+05:30 ~ (GMT+05:30) Chennai",
+              "label": "(GMT+05:30) Chennai"
+            },
+            {
+              "value": "+05:30 ~ (GMT+05:30) Kolkata",
+              "label": "(GMT+05:30) Kolkata"
+            },
+            {
+              "value": "+05:45 ~ (GMT+05:45) Kathmandu",
+              "label": "(GMT+05:45) Kathmandu"
+            },
+            {
+              "value": "+06:00 ~ (GMT+06:00) Astana",
+              "label": "(GMT+06:00) Astana"
+            },
+            {
+              "value": "+06:00 ~ (GMT+06:00) Dhaka",
+              "label": "(GMT+06:00) Dhaka"
+            },
+            {
+              "value": "+05:30 ~ (GMT+05:30) Sri Jayawardenepura",
+              "label": "(GMT+05:30) Sri Jayawardenepura"
+            },
+            {
+              "value": "+06:00 ~ (GMT+06:00) Almaty",
+              "label": "(GMT+06:00) Almaty"
+            },
+            {
+              "value": "+07:00 ~ (GMT+07:00) Novosibirsk",
+              "label": "(GMT+07:00) Novosibirsk"
+            },
+            {
+              "value": "+06:30 ~ (GMT+06:30) Rangoon",
+              "label": "(GMT+06:30) Rangoon"
+            },
+            {
+              "value": "+07:00 ~ (GMT+07:00) Bangkok",
+              "label": "(GMT+07:00) Bangkok"
+            },
+            {
+              "value": "+07:00 ~ (GMT+07:00) Hanoi",
+              "label": "(GMT+07:00) Hanoi"
+            },
+            {
+              "value": "+07:00 ~ (GMT+07:00) Jakarta",
+              "label": "(GMT+07:00) Jakarta"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Krasnoyarsk",
+              "label": "(GMT+08:00) Krasnoyarsk"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Beijing",
+              "label": "(GMT+08:00) Beijing"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Chongqing",
+              "label": "(GMT+08:00) Chongqing"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Hong Kong",
+              "label": "(GMT+08:00) Hong Kong"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Urumqi",
+              "label": "(GMT+08:00) Urumqi"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Kuala Lumpur",
+              "label": "(GMT+08:00) Kuala Lumpur"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Singapore",
+              "label": "(GMT+08:00) Singapore"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Taipei",
+              "label": "(GMT+08:00) Taipei"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Perth",
+              "label": "(GMT+08:00) Perth"
+            },
+            {
+              "value": "+09:00 ~ (GMT+09:00) Irkutsk",
+              "label": "(GMT+09:00) Irkutsk"
+            },
+            {
+              "value": "+08:00 ~ (GMT+08:00) Ulaan Bataar",
+              "label": "(GMT+08:00) Ulaan Bataar"
+            },
+            {
+              "value": "+09:00 ~ (GMT+09:00) Seoul",
+              "label": "(GMT+09:00) Seoul"
+            },
+            {
+              "value": "+09:00 ~ (GMT+09:00) Osaka",
+              "label": "(GMT+09:00) Osaka"
+            },
+            {
+              "value": "+10:00 ~ (GMT+10:00) Yakutsk",
+              "label": "(GMT+10:00) Yakutsk"
+            },
+            {
+              "value": "+09:30 ~ (GMT+09:30) Darwin",
+              "label": "(GMT+09:30) Darwin"
+            },
+            {
+              "value": "+09:30 ~ (GMT+09:30) Adelaide",
+              "label": "(GMT+09:30) Adelaide"
+            },
+            {
+              "value": "+10:00 ~ (GMT+10:00) Canberra",
+              "label": "(GMT+10:00) Canberra"
+            },
+            {
+              "value": "+10:00 ~ (GMT+10:00) Melbourne",
+              "label": "(GMT+10:00) Melbourne"
+            },
+            {
+              "value": "+10:00 ~ (GMT+10:00) Sydney",
+              "label": "(GMT+10:00) Sydney"
+            },
+            {
+              "value": "+10:00 ~ (GMT+10:00) Brisbane",
+              "label": "(GMT+10:00) Brisbane"
+            },
+            {
+              "value": "+10:00 ~ (GMT+10:00) Hobart",
+              "label": "(GMT+10:00) Hobart"
+            },
+            {
+              "value": "+11:00 ~ (GMT+11:00) Vladivostok",
+              "label": "(GMT+11:00) Vladivostok"
+            },
+            {
+              "value": "+10:00 ~ (GMT+10:00) Guam",
+              "label": "(GMT+10:00) Guam"
+            },
+            {
+              "value": "+10:00 ~ (GMT+10:00) Port Moresby",
+              "label": "(GMT+10:00) Port Moresby"
+            },
+            {
+              "value": "+12:00 ~ (GMT+12:00) Magadan",
+              "label": "(GMT+12:00) Magadan"
+            },
+            {
+              "value": "+12:00 ~ (GMT+12:00) Solomon Is.",
+              "label": "(GMT+12:00) Solomon Is."
+            },
+            {
+              "value": "+12:00 ~ (GMT+12:00) Fiji",
+              "label": "(GMT+12:00) Fiji"
+            },
+            {
+              "value": "+12:00 ~ (GMT+12:00) Kamchatka",
+              "label": "(GMT+12:00) Kamchatka"
+            },
+            {
+              "value": "+12:00 ~ (GMT+12:00) Marshall Is.",
+              "label": "(GMT+12:00) Marshall Is."
+            },
+            {
+              "value": "+12:00 ~ (GMT+12:00) Auckland",
+              "label": "(GMT+12:00) Auckland"
+            },
+            {
+              "value": "+13:00 ~ (GMT+13:00) Nuku'alofa",
+              "label": "(GMT+13:00) Nuku'alofa"
+            },
+            {
+              "value": "+13:00 ~ (GMT+13:00) Tokelau Is.",
+              "label": "(GMT+13:00) Tokelau Is."
+            },
+            {
+              "value": "+13:00 ~ (GMT+13:00) Samoa",
+              "label": "(GMT+13:00) Samoa"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Start"
+        },
+        {
+          "type": "select",
+          "id": "start_month",
+          "label": "Month",
+          "default": "January",
+          "options": [
+            {
+              "value": "January",
+              "label": "January"
+            },
+            {
+              "value": "February",
+              "label": "February"
+            },
+            {
+              "value": "March",
+              "label": "March"
+            },
+            {
+              "value": "April",
+              "label": "April"
+            },
+            {
+              "value": "May",
+              "label": "May"
+            },
+            {
+              "value": "June",
+              "label": "June"
+            },
+            {
+              "value": "July",
+              "label": "July"
+            },
+            {
+              "value": "August",
+              "label": "August"
+            },
+            {
+              "value": "September",
+              "label": "September"
+            },
+            {
+              "value": "October",
+              "label": "October"
+            },
+            {
+              "value": "November",
+              "label": "November"
+            },
+            {
+              "value": "December",
+              "label": "December"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "start_day",
+          "label": "Day",
+          "min": 1,
+          "max": 31,
+          "step": 1,
+          "default": 1
+        },
+        {
+          "type": "text",
+          "id": "start_year",
+          "label": "Year",
+          "default": "2021"
+        },
+        {
+          "type": "select",
+          "id": "start_time",
+          "label": "Start time",
+          "default": "23:30:00",
+          "options": [
+            {
+              "value": "00:00:00",
+              "label": "12:00 am (0:00)"
+            },
+            {
+              "value": "00:30:00",
+              "label": "12:30 am (0:30)"
+            },
+            {
+              "value": "01:00:00",
+              "label": "1:00 am (1:00)"
+            },
+            {
+              "value": "01:30:00",
+              "label": "1:30 am (1:30)"
+            },
+            {
+              "value": "02:00:00",
+              "label": "2:00 am (2:00)"
+            },
+            {
+              "value": "02:30:00",
+              "label": "2:30 am (2:30)"
+            },
+            {
+              "value": "03:00:00",
+              "label": "3:00 am (3:00)"
+            },
+            {
+              "value": "03:30:00",
+              "label": "3:30 am (3:30)"
+            },
+            {
+              "value": "04:00:00",
+              "label": "4:00 am (4:00)"
+            },
+            {
+              "value": "04:30:00",
+              "label": "4:30 am (4:30)"
+            },
+            {
+              "value": "05:00:00",
+              "label": "5:00 am (5:00)"
+            },
+            {
+              "value": "05:30:00",
+              "label": "5:30 am (5:30)"
+            },
+            {
+              "value": "06:00:00",
+              "label": "6:00 am (6:00)"
+            },
+            {
+              "value": "06:30:00",
+              "label": "6:30 am (6:30)"
+            },
+            {
+              "value": "07:00:00",
+              "label": "7:00 am (7:00)"
+            },
+            {
+              "value": "07:30:00",
+              "label": "7:30 am (7:30)"
+            },
+            {
+              "value": "08:00:00",
+              "label": "8:00 am (8:00)"
+            },
+            {
+              "value": "08:30:00",
+              "label": "8:30 am (8:30)"
+            },
+            {
+              "value": "09:00:00",
+              "label": "9:00 am (9:00)"
+            },
+            {
+              "value": "09:30:00",
+              "label": "9:30 am (9:30)"
+            },
+            {
+              "value": "10:00:00",
+              "label": "10:00 am (10:00)"
+            },
+            {
+              "value": "10:30:00",
+              "label": "10:30 am (10:30)"
+            },
+            {
+              "value": "11:00:00",
+              "label": "11:00 am (11:00)"
+            },
+            {
+              "value": "11:30:00",
+              "label": "11:30 am (11:30)"
+            },
+            {
+              "value": "12:00:00",
+              "label": "12:00 pm (12:00)"
+            },
+            {
+              "value": "12:30:00",
+              "label": "12:30 pm (12:30)"
+            },
+            {
+              "value": "13:00:00",
+              "label": "1:00 pm (13:00)"
+            },
+            {
+              "value": "13:30:00",
+              "label": "1:30 pm (13:30)"
+            },
+            {
+              "value": "14:00:00",
+              "label": "2:00 pm (14:00)"
+            },
+            {
+              "value": "14:30:00",
+              "label": "2:30 pm (14:30)"
+            },
+            {
+              "value": "15:00:00",
+              "label": "3:00 pm (15:00)"
+            },
+            {
+              "value": "15:30:00",
+              "label": "3:30 pm (15:30)"
+            },
+            {
+              "value": "16:00:00",
+              "label": "4:00 pm (16:00)"
+            },
+            {
+              "value": "16:30:00",
+              "label": "4:30 pm (16:30)"
+            },
+            {
+              "value": "17:00:00",
+              "label": "5:00 pm (17:00)"
+            },
+            {
+              "value": "17:30:00",
+              "label": "5:30 pm (17:30)"
+            },
+            {
+              "value": "18:00:00",
+              "label": "6:00 pm (18:00)"
+            },
+            {
+              "value": "18:30:00",
+              "label": "6:30 pm (18:30)"
+            },
+            {
+              "value": "19:00:00",
+              "label": "7:00 pm (19:00)"
+            },
+            {
+              "value": "19:30:00",
+              "label": "7:30 pm (19:30)"
+            },
+            {
+              "value": "20:00:00",
+              "label": "8:00 pm (20:00)"
+            },
+            {
+              "value": "20:30:00",
+              "label": "8:30 pm (20:30)"
+            },
+            {
+              "value": "21:00:00",
+              "label": "9:00 pm (21:00)"
+            },
+            {
+              "value": "21:30:00",
+              "label": "9:30 pm (21:30)"
+            },
+            {
+              "value": "22:00:00",
+              "label": "10:00 pm (22:00)"
+            },
+            {
+              "value": "22:30:00",
+              "label": "10:30 pm (22:30)"
+            },
+            {
+              "value": "23:00:00",
+              "label": "11:00 pm (23:00)"
+            },
+            {
+              "value": "23:30:00",
+              "label": "11:30 pm (23:30)"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "End"
+        },
+        {
+          "type": "select",
+          "id": "end_month",
+          "label": "Month",
+          "default": "December",
+          "options": [
+            {
+              "value": "January",
+              "label": "January"
+            },
+            {
+              "value": "February",
+              "label": "February"
+            },
+            {
+              "value": "March",
+              "label": "March"
+            },
+            {
+              "value": "April",
+              "label": "April"
+            },
+            {
+              "value": "May",
+              "label": "May"
+            },
+            {
+              "value": "June",
+              "label": "June"
+            },
+            {
+              "value": "July",
+              "label": "July"
+            },
+            {
+              "value": "August",
+              "label": "August"
+            },
+            {
+              "value": "September",
+              "label": "September"
+            },
+            {
+              "value": "October",
+              "label": "October"
+            },
+            {
+              "value": "November",
+              "label": "November"
+            },
+            {
+              "value": "December",
+              "label": "December"
+            }
+          ]
+        },
+        {
+          "type": "range",
+          "id": "end_day",
+          "label": "Day",
+          "min": 1,
+          "max": 31,
+          "step": 1,
+          "default": 1
+        },
+        {
+          "type": "text",
+          "id": "end_year",
+          "label": "Year",
+          "default": "2024"
+        },
+        {
+          "type": "select",
+          "id": "end_time",
+          "label": "End time",
+          "default": "23:30:00",
+          "options": [
+            {
+              "value": "00:00:00",
+              "label": "12:00 am (0:00)"
+            },
+            {
+              "value": "00:30:00",
+              "label": "12:30 am (0:30)"
+            },
+            {
+              "value": "01:00:00",
+              "label": "1:00 am (1:00)"
+            },
+            {
+              "value": "01:30:00",
+              "label": "1:30 am (1:30)"
+            },
+            {
+              "value": "02:00:00",
+              "label": "2:00 am (2:00)"
+            },
+            {
+              "value": "02:30:00",
+              "label": "2:30 am (2:30)"
+            },
+            {
+              "value": "03:00:00",
+              "label": "3:00 am (3:00)"
+            },
+            {
+              "value": "03:30:00",
+              "label": "3:30 am (3:30)"
+            },
+            {
+              "value": "04:00:00",
+              "label": "4:00 am (4:00)"
+            },
+            {
+              "value": "04:30:00",
+              "label": "4:30 am (4:30)"
+            },
+            {
+              "value": "05:00:00",
+              "label": "5:00 am (5:00)"
+            },
+            {
+              "value": "05:30:00",
+              "label": "5:30 am (5:30)"
+            },
+            {
+              "value": "06:00:00",
+              "label": "6:00 am (6:00)"
+            },
+            {
+              "value": "06:30:00",
+              "label": "6:30 am (6:30)"
+            },
+            {
+              "value": "07:00:00",
+              "label": "7:00 am (7:00)"
+            },
+            {
+              "value": "07:30:00",
+              "label": "7:30 am (7:30)"
+            },
+            {
+              "value": "08:00:00",
+              "label": "8:00 am (8:00)"
+            },
+            {
+              "value": "08:30:00",
+              "label": "8:30 am (8:30)"
+            },
+            {
+              "value": "09:00:00",
+              "label": "9:00 am (9:00)"
+            },
+            {
+              "value": "09:30:00",
+              "label": "9:30 am (9:30)"
+            },
+            {
+              "value": "10:00:00",
+              "label": "10:00 am (10:00)"
+            },
+            {
+              "value": "10:30:00",
+              "label": "10:30 am (10:30)"
+            },
+            {
+              "value": "11:00:00",
+              "label": "11:00 am (11:00)"
+            },
+            {
+              "value": "11:30:00",
+              "label": "11:30 am (11:30)"
+            },
+            {
+              "value": "12:00:00",
+              "label": "12:00 pm (12:00)"
+            },
+            {
+              "value": "12:30:00",
+              "label": "12:30 pm (12:30)"
+            },
+            {
+              "value": "13:00:00",
+              "label": "1:00 pm (13:00)"
+            },
+            {
+              "value": "13:30:00",
+              "label": "1:30 pm (13:30)"
+            },
+            {
+              "value": "14:00:00",
+              "label": "2:00 pm (14:00)"
+            },
+            {
+              "value": "14:30:00",
+              "label": "2:30 pm (14:30)"
+            },
+            {
+              "value": "15:00:00",
+              "label": "3:00 pm (15:00)"
+            },
+            {
+              "value": "15:30:00",
+              "label": "3:30 pm (15:30)"
+            },
+            {
+              "value": "16:00:00",
+              "label": "4:00 pm (16:00)"
+            },
+            {
+              "value": "16:30:00",
+              "label": "4:30 pm (16:30)"
+            },
+            {
+              "value": "17:00:00",
+              "label": "5:00 pm (17:00)"
+            },
+            {
+              "value": "17:30:00",
+              "label": "5:30 pm (17:30)"
+            },
+            {
+              "value": "18:00:00",
+              "label": "6:00 pm (18:00)"
+            },
+            {
+              "value": "18:30:00",
+              "label": "6:30 pm (18:30)"
+            },
+            {
+              "value": "19:00:00",
+              "label": "7:00 pm (19:00)"
+            },
+            {
+              "value": "19:30:00",
+              "label": "7:30 pm (19:30)"
+            },
+            {
+              "value": "20:00:00",
+              "label": "8:00 pm (20:00)"
+            },
+            {
+              "value": "20:30:00",
+              "label": "8:30 pm (20:30)"
+            },
+            {
+              "value": "21:00:00",
+              "label": "9:00 pm (21:00)"
+            },
+            {
+              "value": "21:30:00",
+              "label": "9:30 pm (21:30)"
+            },
+            {
+              "value": "22:00:00",
+              "label": "10:00 pm (22:00)"
+            },
+            {
+              "value": "22:30:00",
+              "label": "10:30 pm (22:30)"
+            },
+            {
+              "value": "23:00:00",
+              "label": "11:00 pm (23:00)"
+            },
+            {
+              "value": "23:30:00",
+              "label": "11:30 pm (23:30)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "liquid",
+      "name": "Liquid/HTML",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Copy and paste your custom code."
+        },
+        {
+          "type": "liquid",
+          "id": "liquid",
+          "label": "Liquid and/or HTML"
+        }
+      ]
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "left_image",
+      "label": "Left image"
+    },
+    {
+      "type": "text",
+      "id": "left_caption",
+      "label": "Left caption (optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_image",
+      "label": "Right image"
+    },
+    {
+      "type": "text",
+      "id": "right_caption",
+      "label": "Right caption (optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "handle_image",
+      "label": "Handle image (optional)"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Slider position",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text appearance"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 80,
+      "max": 150,
+      "step": 5,
+      "default": 100,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "text_width",
+      "label": "Text box width",
+      "min": 30,
+      "max": 70,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Design"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color_background",
+      "id": "text_background_color",
+      "label": "Text background"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "drag_color",
+      "label": "Handle icon",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "handle_color",
+      "label": "Handle background",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "caption_text",
+      "label": "Caption text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "caption_background",
+      "label": "Caption background",
+      "default": "#121212"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_background_image",
+      "label": "Show background image",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "select",
+      "id": "animation",
+      "label": "Animation",
+      "default": "none",
+      "options": [
+        {
+          "value": "fade-in",
+          "label": "Fade-in"
+        },
+        {
+          "value": "fade-in-left",
+          "label": "Fade-in left"
+        },
+        {
+          "value": "fade-in-right",
+          "label": "Fade-in right"
+        },
+        {
+          "value": "fade-in-up",
+          "label": "Fade-in up"
+        },
+        {
+          "value": "fade-in-down",
+          "label": "Fade-in down"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 60,
+      "max": 100,
+      "step": 5,
+      "default": 90,
+      "unit": "%"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "type": "range",
+      "id": "inner_padding",
+      "label": "Inner padding",
+      "info": "Only applies to top and bottom.",
+      "min": 0,
+      "max": 100,
+      "default": 60,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "outer_margin",
+      "label": "Outer margin",
+      "info": "Only applies to top and bottom.",
+      "min": 0,
+      "max": 100,
+      "default": 0,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "CSS"
+    },
+    {
+      "type": "liquid",
+      "id": "mobile_custom_css",
+      "label": "Mobile CSS",
+      "info": "Applied on screens less than 480px."
+    },
+    {
+      "type": "text",
+      "id": "anchor_id",
+      "label": "Link anchor id",
+      "placeholder": "#web-pack-section",
+      "info": "Enter a unique value to jump to this section from same page using a link or button. Eg. #web-pack-section"
+    },
+    {
+      "type": "checkbox",
+      "id": "override_theme_font",
+      "label": "Override default theme font",
+      "default": false
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading",
+      "default": "serif"
+    },
+    {
+      "type": "font_picker",
+      "id": "main_font",
+      "label": "Text",
+      "default": "sans-serif"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Before After Slider",
+      "settings": {
+      },
+      "blocks": [
+        {
+          "type": "inset_image"
+        },
+        {
+          "type": "small_text"
+        },
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "locales": {
+    "en": {
+      "success": "Thanks for contacting us. We'll get back to you as soon as possible.",
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds"
+    }
+  }
+}
+{% endschema %}
+
+{%- comment -%} JSON Settings {%- endcomment -%}
+<script type="application/json" data-wsp-section="{{ section_id }}">
+  {
+    "id": {{ section_id | json }},
+    "animation": {{ section.settings.animation | json }}
+  }
+</script>
+{%- if slider_block.size > 0 and slider_count != 0 -%}
+  <script
+    data-wsp-section-external-js="{{ section_id }}"
+    src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/flickity-2.3.0.pkgd.min.js?v=1671485005"
+    defer
+  ></script>
+  <script
+    data-wsp-section-external-js="{{ section_id }}"
+    src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/flickity-fade-1.0.0.min.js?v=1659560790"
+    defer
+  ></script>
+{%- endif -%}
+{%- comment -%} JavaScript {%- endcomment -%}
+<script
+  data-wsp-section-js="{{ section_id }}"
+  type="module"
+  defer
+>
+  (function(){
+
+    const webPack = {
+      settings: {},
+      animateSection: function(entries, observer){
+        // Target the first entry available.
+        let observedSection = entries[0];
+        if (observedSection.isIntersecting) {
+          observedSection.target.classList.add('wsp-section__animation-applied');
+        }
+      },
+      enableSliderBlock: function(section){
+        const sliderBlocks = section.querySelectorAll(`.wsp-section__slider-block`);
+
+        sliderBlocks.forEach(elem => {
+          webPack.flkty = new Flickity( elem, {
+            cellAlign: 'left',
+            contain: true,
+            wrapAround: true,
+            adaptiveHeight: true,
+            imagesLoaded: true,
+            prevNextButtons: JSON.parse(getComputedStyle(elem).getPropertyValue('--show-arrows')),
+            autoPlay: JSON.parse(getComputedStyle(elem).getPropertyValue('--autoplay')),
+            fade: JSON.parse(getComputedStyle(elem).getPropertyValue('--slider-animation')),
+            pageDots: JSON.parse(getComputedStyle(elem).getPropertyValue('--page-dots')),
+            draggable: JSON.parse(getComputedStyle(elem).getPropertyValue('--draggable')),
+            freeScrollFriction: JSON.parse(getComputedStyle(elem).getPropertyValue('--free-scroll-friction')),
+            selectedAttraction: JSON.parse(getComputedStyle(elem).getPropertyValue('--selected-attraction')),
+            friction: JSON.parse(getComputedStyle(elem).getPropertyValue('--friction')),
+            dragThreshold: JSON.parse(getComputedStyle(elem).getPropertyValue('--drag-threshold'))
+          });
+        });
+
+      },
+      initializeAndEnableClock(section) {
+        const clockSelector = '.wsp-section__clock';
+        const startDate = section.querySelector('[data-timer-start]').dataset.timerStart;
+        const endDate = section.querySelector('[data-timer-end]').dataset.timerEnd;
+
+        const startMs = Date.parse(startDate);
+        const endMs = Date.parse(endDate);
+        const currentMs = Date.parse(new Date());
+
+        if (endMs <= currentMs || currentMs < startMs) {
+          section.querySelector(`.wsp-section__clock-wrap`).style.display = 'none';
+          return;
+        }
+
+        const clock = section.querySelector(clockSelector);
+
+        function updateClock() {
+          const total = Date.parse(endDate) - Date.parse(new Date());
+          const days = Math.floor(total / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+          const minutes = Math.floor((total / 1000 / 60) % 60);
+          const seconds = Math.floor((total / 1000) % 60);
+
+          const daysSpan = clock.querySelector('.wsp-section__days .wsp-section__number');
+          const hoursSpan = clock.querySelector('.wsp-section__hours .wsp-section__number');
+          const minutesSpan = clock.querySelector('.wsp-section__minutes .wsp-section__number');
+          const secondsSpan = clock.querySelector('.wsp-section__seconds .wsp-section__number');
+
+          if (daysSpan.innerHTML != days) daysSpan.innerHTML = days;
+          if (hoursSpan.innerHTML != hours) hoursSpan.innerHTML = ('0' + hours).slice(-2);
+          if (minutesSpan.innerHTML != minutes) minutesSpan.innerHTML = ('0' + minutes).slice(-2);
+          if (secondsSpan.innerHTML != seconds) secondsSpan.innerHTML = ('0' + seconds).slice(-2);
+
+          if (total <= 0) clearInterval(timeinterval);
+        }
+
+        updateClock();
+        const timeinterval = setInterval(updateClock, 1000);
+      },
+      load: function(section){
+
+        let isClicked = false;
+
+        const image = section.querySelector('.wsp-section__comparison__overlay');
+        const slider = section.querySelector('.wsp-section__comparison__slider');
+        const fullImage = section.querySelector('.wsp-section__compare');
+
+        const width = fullImage.offsetWidth;
+        const height = fullImage.offsetHeight;
+
+        function compare() {
+
+          slider.style.top = height / 2 - slider.offsetHeight / 2 + 'px';
+          slider.style.left = width / 2 - slider.offsetWidth / 2 + 'px';
+          image.style.width = '50%';
+
+          slider.addEventListener('mousedown', onSlideStart);
+          slider.addEventListener('touchstart', onSlideStart);
+
+          section.addEventListener('mouseup', () => (isClicked = false));
+          section.addEventListener('touchstop', () => (isClicked = false));
+
+          section.addEventListener('mousemove', onSlideMove);
+          section.addEventListener('touchmove', onSlideMove);
+        }
+
+        function doSlide(x) {
+          image.style.width = x + 'px';
+          slider.style.left = image.offsetWidth - slider.offsetWidth / 2 + 'px';
+        }
+
+        function onSlideStart(event) {
+          event.preventDefault();
+          isClicked = true;
+        }
+
+        function onSlideMove(event) {
+          if (!isClicked) return;
+
+          doSlide(currentPosition(event));
+        }
+
+        function currentPosition(event = window.event) {
+          let pageX = event.pageX;
+          let hasTouchScreen = null;
+
+          if ("maxTouchPoints" in navigator && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            hasTouchScreen = navigator.maxTouchPoints > 0;
+          }
+
+          if (typeof hasTouchScreen != 'undefined' && hasTouchScreen != null) {
+            pageX = event.changedTouches[0].pageX
+          }
+
+          let xImage = image.getBoundingClientRect();
+          let x = 0;
+
+          x = pageX - xImage.left;
+
+          if (x < 0) x = 0;
+
+          if (x > width) x = width;
+
+          return x;
+        }
+
+        compare();
+
+
+        if (this.settings.animation !== 'none'){
+          const options = {
+            root: null,
+            rootMargin: '0px',
+            threshold: [0, 0.25, 0.5, 0.75, 1]
+          };
+          // Construct Intersection Observer.
+          const observer = new IntersectionObserver( this.animateSection, options );
+          // Observe if element is present.
+          if (section) {
+            observer.observe(section);
+          }
+        }
+
+        const countdownTimer = section.querySelector('.wsp-section__clock');
+        if (typeof countdownTimer !== 'undefined' && countdownTimer !== null){
+          webPack.initializeAndEnableClock(section);
+        }
+
+        const sliderBlock = section.querySelector('.wsp-section__slider-block');
+        if (typeof sliderBlock !== 'undefined' && sliderBlock !== null){
+          webPack.enableSliderBlock(section);
+        }
+      },
+      unload: function(section){
+        section.classList.remove('wsp-section__animation-applied')
+      }
+    }
+
+    window.addEventListener('shopify:section:unload', function (e) {
+      const settings = document.querySelector(`[data-wsp-section="${e.detail.sectionId}"]`);
+      const sectionId = e.detail.sectionId;
+      const section = document.querySelector(`#DP--${e.detail.sectionId}`);
+      if (sectionId == webPack.settings.id){
+        webPack.unload(section);
+      }
+    });
+
+    webPack.settings = JSON.parse(document.querySelector('[data-wsp-section="{{ section_id }}"]').innerHTML);
+    const sectionId = {{ section.id | json }};
+    const section = document.querySelector(`#DP--${sectionId}`);
+
+    if (sectionId == webPack.settings.id){
+      webPack.load(section);
+    }
+  })()
+</script>
