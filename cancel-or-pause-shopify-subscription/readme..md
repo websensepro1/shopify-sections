@@ -1,3 +1,5 @@
+[![Cancel or Pause Shopify Subscription](https://i.ytimg.com/vi/u5m14yVyKPQ/maxresdefault.jpg)](https://youtu.be/u5m14yVyKPQ?list=PLvT_6E7D1NZIlHa09cgswsjD9QunUpHKy)
+
 Hey there, Shopify store owners. Let’s be real for a second, sometimes you need to take a break. Maybe business is slow, you’re pivoting, or you just need to pause and figure things out. Whatever the reason, you went to cancel your Shopify subscription and… hit a wall. That “Cancel Plan” button seems to have vanished.
 
 ## Step 1:
