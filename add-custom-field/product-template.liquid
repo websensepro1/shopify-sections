@@ -1,1 +1,23 @@
+//Copy and paste the code below into your product.liquid
 
+
+// Following code will display field as required + Will show in checkout page
+
+<p class="line-item-property__field">
+  <label for="your-name">Your name</label>
+  <input required class="required" id="your-name" type="text" name="properties[Your name]">
+</p>
+
+// Following code will display field as required but it will not show in checkout page
+
+<p class="line-item-property__field">
+  <label for="your-name">Your name</label>
+  <input required class="required" id="your-name" type="text" name="properties[_Your name]">
+</p>
+
+// Following code will display optional field in product page 
+
+<p class="line-item-property__field">
+  <label for="your-name">Your name</label>
+  <input id="your-name" type="text" name="properties[_Your name]">
+</p>
