@@ -4,7 +4,7 @@
 
 # Replace the following code in _product-card-gallery.liquid
 
-{%- if product.available == false or product.compare_at_price > product.price and product.available -%}
+``` {%- if product.available == false or product.compare_at_price > product.price and product.available -%}
     <div
       class="
         product-badges__badge product-badges__badge--rectangle
@@ -17,12 +17,12 @@
         {{ 'content.product_badge_sale' | t }}
       {%- endif -%}
     </div>
-  {%- endif -%}
+  {%- endif -%} ```
 With the following code
 
 # Copy Code
 
-{%- assign current_variant = product.selected_or_first_available_variant -%}
+``` {%- assign current_variant = product.selected_or_first_available_variant -%}
 {%- assign compare_at_price = product.compare_at_price_max -%}
 {%- assign price = product.price -%}
 
@@ -49,7 +49,7 @@ With the following code
         {%- if max_discount > 0 -%}{{ max_discount }}% OFF{%- endif -%}
       {%- endif -%}
     </div>
-{%- endif -%}
+{%- endif -%} ```
 
 ## ** Step 3 **:
 
