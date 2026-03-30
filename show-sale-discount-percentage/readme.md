@@ -1,4 +1,7 @@
-Step 1: Replace the code in _product-card-gallery.liquid
+Step 1:
+
+Replace the code in _product-card-gallery.liquid
+
 Replace the following code in _product-card-gallery.liquid
 
 {%- if product.available == false or product.compare_at_price > product.price and product.available -%}
@@ -47,7 +50,10 @@ Copy Code
     </div>
 {%- endif -%}
 
-Step 3: Add block in Product Page Template
+Step 3:
+
+Add block in Product Page Template
+
 Goto Customize theme >> Product Page Template and Add New Block as per the screenshot below:
 
 [!(https://websensepro.com/wp-content/uploads/2025/05/price-code-block.png)]
