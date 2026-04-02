@@ -1,4 +1,4 @@
-# Shopify Sections by WebSensePro
+# FREE Shopify Sections by WebSensePro
 
 A collection of free, high-quality, and customizable Shopify sections to enhance your theme's functionality. Developed by WebSensePro, these sections are designed to be easily integrated into any Shopify 2.0 theme (Dawn, Debut, etc.) without requiring complex app subscriptions.
 
